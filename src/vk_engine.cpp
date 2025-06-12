@@ -10,6 +10,10 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 
+// Simplify Vulkan initialization
+//#include "../third_party/vk-bootstrap/src/VkBootstrap.
+#include "VkBootstrap.h"
+
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
 constexpr bool bUseValidationLayers = true;

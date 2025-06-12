@@ -6,7 +6,6 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_engine.h
 	vk_engine.cpp
 	vk_types.h)
-	
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
@@ -17,6 +16,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE sdl)
 
 target_link_libraries (${PROJECT_NAME} PUBLIC
 	Vulkan::Vulkan
+	vkbootstrap
 	)
 
 target_precompile_headers (${PROJECT_NAME} PUBLIC
