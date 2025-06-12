@@ -15,6 +15,8 @@
 #include <vulkan/vulkan.hpp> // using the HPP bindings
 #include <vulkan/vk_enum_string_helper.h>
 
+// fmt library for better console printouts
+#include <fmt/core.h>
 
 
 // Macro to check Vulkan error codes to eas use of most vulkan functions

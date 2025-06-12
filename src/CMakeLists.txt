@@ -16,6 +16,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE sdl)
 
 target_link_libraries (${PROJECT_NAME} PUBLIC
 	Vulkan::Vulkan
+	fmt::fmt
 	vkbootstrap
 	)
 

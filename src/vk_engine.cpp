@@ -29,6 +29,7 @@ void VkSREngine::init()
 	loadedEngine = this;
 
 	SDL_Log("%s", "Hello, VkSREngine with SDL3!");
+	fmt::println("Hello, VkSREngine with fmt!");
 }
 
 void VkSREngine::init_vulkan() 
