@@ -6,6 +6,10 @@
 
 #include <iostream>
 
+// SDL3 for windowing
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_vulkan.h>
+
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
 constexpr bool bUseValidationLayers = true;
@@ -20,7 +24,7 @@ void VkSREngine::init()
 	assert(loadedEngine == nullptr);
 	loadedEngine = this;
 
-	std::cout << "Hello, VkSREngine!" << std::endl;
+	SDL_Log("%s", "Hello, VkSREngine with SDL3!");
 }
 
 void VkSREngine::init_vulkan() 
