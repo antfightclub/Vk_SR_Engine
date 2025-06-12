@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 4.0)
 
 project(Vk_SR_Engine)
 
-set(CMAKE_CXX_STANDARD 23)
+# Find vulkan
+find_package(Vulkan REQUIRED)
+
+
 
 add_subdirectory(third_party)
 add_subdirectory(src)
