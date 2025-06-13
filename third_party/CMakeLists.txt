@@ -22,5 +22,5 @@ target_link_libraries(sdl INTERFACE SDL3::SDL3)
 
 ## Vulkan Memory Allocator
 add_subdirectory(VulkanMemoryAllocator)
-
+add_subdirectory(glm)
 
