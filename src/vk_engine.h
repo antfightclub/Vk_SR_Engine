@@ -5,6 +5,24 @@
 
 constexpr unsigned int FRAME_OVERLAP = 2;
 
+struct DeletionQueue
+{
+	std::deque<std::function<void()>> deletors;
+
+	void push_function(std::function<void()>&& function) {
+		deletors.push_back(function);
+	}
+
+	void flush() {
+		// Reverse iterate the deletion queue to execute all of the functions
+		for (auto it = deletors.rbegin(); it != deletors.rend(); it++) {
+			(*it)();	 // Call functors (usually a vkdestroysomething)
+		}
+
+		deletors.clear();
+	}
+};
+
 class VkSREngine {
 public:
 	bool _isInitialized{ false };
@@ -26,7 +44,8 @@ public:
 	
 	vk::Queue _graphicsQueue;
 	uint32_t _graphicsQueueFamily;
-
+	
+	DeletionQueue _mainDeletionQueue;
 	VmaAllocator _allocator;
 
 	vk::SwapchainKHR _swapchain;
