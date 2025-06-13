@@ -118,6 +118,7 @@ void VkSREngine::cleanup()
 		// Ensure that GPU has stopped all work
 		vkDeviceWaitIdle(_device);
 
+		vkDestroySurfaceKHR(_instance, _surface, nullptr);
 
 		vmaDestroyAllocator(_allocator);
 
