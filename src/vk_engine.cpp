@@ -121,7 +121,7 @@ void VkSREngine::init_vulkan()
 
 void VkSREngine::init_swapchain() {
 	create_swapchain(_windowExtent.width, _windowExtent.height);
-
+	//> drawimage
 	// Use the largest
 	vk::Extent3D drawImageExtent = {
 		_largestExtent.width,
@@ -148,6 +148,37 @@ void VkSREngine::init_swapchain() {
 	// Allocate and create the draw image
 	vmaCreateImage(_allocator, reinterpret_cast<VkImageCreateInfo*>(&rimg_info), &rimg_allocinfo, reinterpret_cast<VkImage*>(&_drawImage.image), &_drawImage.allocation, nullptr);
 
+	vk::ImageViewCreateInfo rview_info = vkinit::imageview_create_info(_drawImage.imageFormat, _drawImage.image, vk::ImageAspectFlagBits::eColor);
+
+	VK_CHECK(vkCreateImageView(_device, reinterpret_cast<VkImageViewCreateInfo*>(&rview_info), nullptr, reinterpret_cast<VkImageView*>(&_drawImage.imageView)));
+	//< drawimage
+	
+	//> depthimage
+	_depthImage.imageFormat = vk::Format::eD32Sfloat;
+	_depthImage.imageExtent = drawImageExtent;
+
+	vk::ImageUsageFlags depthImageUsages{
+		vk::ImageUsageFlagBits::eDepthStencilAttachment
+	};
+
+	vk::ImageCreateInfo dimg_info = vkinit::image_create_info(_depthImage.imageFormat, depthImageUsages, drawImageExtent);
+
+	// Allocate and create the draw image
+	vmaCreateImage(_allocator, reinterpret_cast<VkImageCreateInfo*>(&dimg_info), &rimg_allocinfo, reinterpret_cast<VkImage*>(&_depthImage.image), &_depthImage.allocation, nullptr);
+
+	vk::ImageViewCreateInfo dview_info = vkinit::imageview_create_info(_depthImage.imageFormat, _depthImage.image, vk::ImageAspectFlagBits::eDepth);
+
+	VK_CHECK(vkCreateImageView(_device, reinterpret_cast<VkImageViewCreateInfo*>(&dview_info), nullptr, reinterpret_cast<VkImageView*>(&_depthImage.imageView)));
+	//< depthimage
+
+	// Add to deletion queue
+	_mainDeletionQueue.push_function([=]() {
+		vkDestroyImageView(_device, _drawImage.imageView, nullptr);
+		vmaDestroyImage(_allocator, _drawImage.image, _drawImage.allocation);
+
+		vkDestroyImageView(_device, _depthImage.imageView, nullptr);
+		vmaDestroyImage(_allocator, _depthImage.image, _depthImage.allocation);
+		});
 }
 
 void VkSREngine::create_swapchain(uint32_t width, uint32_t height) {
