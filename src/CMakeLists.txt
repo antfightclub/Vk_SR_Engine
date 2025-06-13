@@ -5,7 +5,10 @@ target_sources(${PROJECT_NAME} PRIVATE
 	main.cpp
 	vk_engine.h
 	vk_engine.cpp
-	vk_types.h)
+	vk_types.h
+	vk_initializers.h
+	vk_initializers.cpp
+	)
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
