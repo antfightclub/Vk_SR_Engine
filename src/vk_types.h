@@ -30,7 +30,7 @@
 do {																		\
 	VkResult err = x;														\
 	if (err) {																\
-		fmt::println("Detected Vulkan error: {}", string_Vkresult(err));	\
+		fmt::println("Detected Vulkan error: {}", string_VkResult(err));	\
 			abort();														\
-	}																		\
-	while (0)
+		}																	\
+} while (0)
