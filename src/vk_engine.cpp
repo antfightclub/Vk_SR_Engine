@@ -251,7 +251,34 @@ void VkSREngine::resize_swapchain() {
 
 //> commands
 void VkSREngine::init_commands() {
+	// Create a command pool for commands submitted to the graphics queue
+	// The pool will allow for resetting of individual command buffers
+	vk::CommandPoolCreateInfo commandPoolInfo = vkinit::command_pool_create_info(_graphicsQueueFamily, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 
+	// Create per-frame command structures
+	for (int i = 0; i < FRAME_OVERLAP; i++) {
+		VK_CHECK(_device.createCommandPool(&commandPoolInfo, nullptr, &_frames[i]._commandPool));
+		
+		// Allocate the default command buffer that we will use for rendering
+		vk::CommandBufferAllocateInfo cmdAllocInfo = vkinit::command_buffer_allocate_info(_frames[i]._commandPool);
+
+		VK_CHECK(_device.allocateCommandBuffers(&cmdAllocInfo, &_frames[i]._mainCommandBuffer));
+
+		_mainDeletionQueue.push_function([=]() {
+			_device.destroyCommandPool(_frames[i]._commandPool, nullptr);
+			});
+	}
+
+	// Create immediate submit command structures
+	VK_CHECK(_device.createCommandPool(&commandPoolInfo, nullptr, &_immCommandPool));
+
+	vk::CommandBufferAllocateInfo cmdAllocInfo = vkinit::command_buffer_allocate_info(_immCommandPool, 1);
+
+	VK_CHECK(_device.allocateCommandBuffers(&cmdAllocInfo, &_immCommandBuffer));
+
+	_mainDeletionQueue.push_function([=]() {
+		_device.destroyCommandPool(_immCommandPool, nullptr);
+		});
 }
 //< commands
 
