@@ -93,7 +93,7 @@ public:
 
 	void cleanup();
 
-	void immediate_submit();
+	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 
 private:
 	void init_vulkan();
