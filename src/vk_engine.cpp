@@ -112,6 +112,44 @@ void VkSREngine::init_vulkan()
 	vmaCreateAllocator(&allocatorInfo, &_allocator);
 }
 
+void VkSREngine::init_swapchain() {
+
+}
+
+void VkSREngine::create_swapchain(uint32_t width, uint32_t height) {
+	// Use vulkan bootstrap to create swapchain
+	vkb::SwapchainBuilder swapchainBuilder{ _chosenGPU, _device, _surface };
+
+	_swapchainImageFormat = vk::Format::eB8G8R8A8Unorm;
+
+	vkb::Swapchain vkbSwapchain = swapchainBuilder
+		.set_desired_format(vk::SurfaceFormatKHR{ _swapchainImageFormat, vk::ColorSpaceKHR::eSrgbNonlinear })
+		.set_desired_present_mode(VK_PRESENT_MODE_FIFO_KHR)
+		.set_desired_extent(width, height)
+		.add_image_usage_flags(VK_IMAGE_USAGE_TRANSFER_DST_BIT)
+		.build()
+		.value();
+
+	_swapchainExtent = vkbSwapchain.extent;
+
+	// Store swapchain and its related images
+	_swapchain = vkbSwapchain.swapchain;
+	_swapchainImages = vkbSwapchain.get_images().value();
+	_swapchainImageViews = vkbSwapchain.get_image_views().value();
+
+	// Set _swapchainImageCount to the amount of swapchain images - used to initialize 
+	// the same amount of _readyForPresentSemaphores
+	VK_CHECK(vkGetSwapchainImagesKHR(_device, _swapchain, &_swapchainImageCount, nullptr));
+}
+
+void VkSREngine::destroy_swapchain() {
+
+}
+
+void VkSREngine::resize_swapchain() {
+
+}
+
 void VkSREngine::cleanup() 
 {
 	if (_isInitialized) {
