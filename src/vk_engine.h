@@ -24,6 +24,11 @@ public:
 	vk::Device _device;
 	vk::DebugUtilsMessengerEXT _debug_messenger;
 	
+	vk::Queue _graphicsQueue;
+	uint32_t _graphicsQueueFamily;
+
+	VmaAllocator _allocator;
+
 	void init();
 
 	void run();

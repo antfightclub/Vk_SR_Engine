@@ -98,11 +98,33 @@ void VkSREngine::init_vulkan()
 	// Get the VkDevice and VkPhysicalDevice handles used in the rest of the vulkan application
 	_device = vkbDevice.device;
 	_chosenGPU = physicalDevice.physical_device;
+
+	// Get the graphics queue handle
+	_graphicsQueue = vkbDevice.get_queue(vkb::QueueType::graphics).value();
+	_graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
+
+	// Initialize Vulkan Memory Allocator
+	VmaAllocatorCreateInfo allocatorInfo = {};
+	allocatorInfo.physicalDevice = _chosenGPU;
+	allocatorInfo.device = _device;
+	allocatorInfo.instance = _instance;
+	allocatorInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
+	vmaCreateAllocator(&allocatorInfo, &_allocator);
 }
 
 void VkSREngine::cleanup() 
 {
 	if (_isInitialized) {
+		// Ensure that GPU has stopped all work
+		vkDeviceWaitIdle(_device);
+
+
+		vmaDestroyAllocator(_allocator);
+
+		vkDestroyDevice(_device, nullptr);
+		vkb::destroy_debug_utils_messenger(_instance, _debug_messenger);
+		vkDestroyInstance(_instance, nullptr);
+
 		SDL_DestroyWindow(_window);
 	}
 }
