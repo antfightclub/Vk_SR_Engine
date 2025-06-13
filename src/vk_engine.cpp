@@ -43,6 +43,12 @@ void VkSREngine::init()
 		window_flags
 	);
 
+	int largestWidth{ 0 };
+	int largestHeight{ 0 };
+	SDL_GetWindowMaximumSize(_window, &largestWidth, &largestHeight);
+	_largestExtent.setHeight((uint32_t)largestHeight);
+	_largestExtent.setWidth((uint32_t)largestWidth);
+
 	init_vulkan();
 
 	_isInitialized = true;
@@ -113,6 +119,15 @@ void VkSREngine::init_vulkan()
 }
 
 void VkSREngine::init_swapchain() {
+	create_swapchain(_windowExtent.width, _windowExtent.height);
+
+	// Use the largest
+	vk::Extent3D drawImageExtent = {
+		_largestExtent.width,
+		_largestExtent.height,
+		1
+	};
+
 
 }
 
