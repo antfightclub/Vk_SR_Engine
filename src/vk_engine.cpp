@@ -1,22 +1,21 @@
 //vk_engine.cpp
 #include "vk_engine.h"
 
-#include <chrono>
-#include <thread>
-
-#include <iostream>
-
 // SDL3 for windowing
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 
+#include <vk_types.h>
+
 // Simplify Vulkan initialization
-//#include "../third_party/vk-bootstrap/src/VkBootstrap.
 #include "VkBootstrap.h"
 
 // Vulkan Memory Allocator to help with memory allocation
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
+
+#include <chrono>
+#include <thread>
 
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
