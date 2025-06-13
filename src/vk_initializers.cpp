@@ -1,7 +1,24 @@
 //vk_initializers.cpp
 #include "vk_initializers.h"
 
-//> images
+//> init_cmds
+vk::CommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyIndex, vk::CommandPoolCreateFlags flags) {
+	vk::CommandPoolCreateInfo info = {};
+	info.queueFamilyIndex = queueFamilyIndex;
+	info.flags = flags;
+	return info;
+}
+
+vk::CommandBufferAllocateInfo vkinit::command_buffer_allocate_info(vk::CommandPool pool, uint32_t count = 1) {
+	vk::CommandBufferAllocateInfo info = {};
+	info.commandPool = pool;
+	info.commandBufferCount = count;
+	info.level = vk::CommandBufferLevel::ePrimary;
+	return info;
+}
+//< init_cmds
+
+//> init_images
 vk::ImageCreateInfo vkinit::image_create_info(vk::Format format, vk::ImageUsageFlags usageFlags, vk::Extent3D extent) {
 	vk::ImageCreateInfo info = {};
 
@@ -39,4 +56,4 @@ vk::ImageViewCreateInfo vkinit::imageview_create_info(vk::Format format, vk::Ima
 
 	return info;
 }
-//< images
+//< init_images
