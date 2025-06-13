@@ -38,7 +38,7 @@ public:
 	
 	// Vulkan instance and device related
 	vk::Instance _instance;
-	VkSurfaceKHR _surface;
+	vk::SurfaceKHR _surface;
 	vk::PhysicalDevice _chosenGPU;
 	vk::Device _device;
 	vk::DebugUtilsMessengerEXT _debug_messenger;
@@ -53,8 +53,8 @@ public:
 	vk::SwapchainKHR _swapchain;
 	vk::Format _swapchainImageFormat;
 
-	std::vector<VkImage> _swapchainImages;
-	std::vector<VkImageView> _swapchainImageViews;
+	std::vector<vk::Image> _swapchainImages;
+	std::vector<vk::ImageView> _swapchainImageViews;
 	vk::Extent2D _swapchainExtent;
 	uint32_t _swapchainImageCount;
 	std::vector<vk::Semaphore> _readyForPresentSemaphores;

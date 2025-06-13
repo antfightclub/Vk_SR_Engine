@@ -73,7 +73,7 @@ void VkSREngine::init_vulkan()
 	_instance = vkb_inst.instance;
 	_debug_messenger = vkb_inst.debug_messenger;
 
-	SDL_Vulkan_CreateSurface(_window, _instance, VK_NULL_HANDLE, &_surface);
+	SDL_Vulkan_CreateSurface(_window, _instance, VK_NULL_HANDLE, reinterpret_cast<VkSurfaceKHR*>(&_surface));
 
 	// Choose features from different spec versions
 	
@@ -168,8 +168,24 @@ void VkSREngine::create_swapchain(uint32_t width, uint32_t height) {
 
 	// Store swapchain and its related images
 	_swapchain = vkbSwapchain.swapchain;
-	_swapchainImages = vkbSwapchain.get_images().value();
-	_swapchainImageViews = vkbSwapchain.get_image_views().value();
+	std::vector<VkImage> images;
+	std::vector<VkImageView> imageviews;
+	std::vector<vk::Image> vkimages;
+	std::vector<vk::ImageView> vkimageviews;
+	
+	images = vkbSwapchain.get_images().value();
+	imageviews = vkbSwapchain.get_image_views().value();
+	
+	// Unfortunately the swapchainbuilder doesn't play well with the Vulkan-Hpp headers...
+	for (int i = 0; i < images.size(); i++) {
+		vkimages.push_back((vk::Image)images[i]); // Will it seriously let me do this?
+	}
+	for (int i = 0; i < imageviews.size(); i++) {
+		vkimageviews.push_back((vk::ImageView)imageviews[i]); // See previous question
+	}
+		
+	_swapchainImages = vkimages;
+	_swapchainImageViews = vkimageviews;
 
 	// Set _swapchainImageCount to the amount of swapchain images - used to initialize 
 	// the same amount of _readyForPresentSemaphores
