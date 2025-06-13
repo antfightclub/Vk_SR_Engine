@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 4.0)
 
 project("VkSREngine")
 
-add_compile_options(-fno-strict-aliasing)
-
 # Find vulkan
 find_package(Vulkan REQUIRED)
 

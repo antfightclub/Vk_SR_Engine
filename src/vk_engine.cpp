@@ -253,6 +253,10 @@ void VkSREngine::cleanup()
 		// Ensure that GPU has stopped all work
 		_device.waitIdle();
 
+		_mainDeletionQueue.flush();
+
+		destroy_swapchain();
+
 		_instance.destroySurfaceKHR(_surface);
 
 		vmaDestroyAllocator(_allocator);
