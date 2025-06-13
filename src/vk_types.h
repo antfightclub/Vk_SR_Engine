@@ -17,7 +17,7 @@
 #include <vulkan/vk_enum_string_helper.h>
 
 // Vulkan Memory Allocator
-#include "vk_mem_alloc.h"
+#include "vk_mem_alloc.hpp"
 
 // fmt library for better console printouts
 #include <fmt/core.h>
@@ -40,7 +40,7 @@ do {																		\
 struct AllocatedImage {
 	vk::Image image;
 	vk::ImageView imageView;
-	VmaAllocation allocation;
+	vma::Allocation allocation;
 	vk::Extent3D imageExtent;
 	vk::Format imageFormat;
 };

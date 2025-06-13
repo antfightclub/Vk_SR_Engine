@@ -17,11 +17,15 @@ target_include_directories (${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
 # SDL
 target_link_libraries(${PROJECT_NAME} PRIVATE sdl)
 
+# VMA-Hpp
+
+# main
 target_link_libraries (${PROJECT_NAME} PUBLIC
 	Vulkan::Vulkan
+	GPUOpen::VulkanMemoryAllocator
+	VulkanMemoryAllocator-Hpp::VulkanMemoryAllocator-Hpp
 	fmt::fmt
 	vkbootstrap
-	GPUOpen::VulkanMemoryAllocator
 	glm::glm
 	)
 

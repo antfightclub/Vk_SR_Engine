@@ -59,7 +59,7 @@ public:
 	
 	// Allocation and deletion
 	DeletionQueue _mainDeletionQueue;
-	VmaAllocator _allocator;
+	vma::Allocator _allocator;
 
 	// Swapchain
 	vk::SwapchainKHR _swapchain;

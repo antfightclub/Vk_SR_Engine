@@ -13,7 +13,7 @@
 
 // Vulkan Memory Allocator to help with memory allocation
 #define VMA_IMPLEMENTATION
-#include "vk_mem_alloc.h"
+#include "vk_mem_alloc.hpp"
 
 #include <chrono>
 #include <thread>
@@ -115,12 +115,12 @@ void VkSREngine::init_vulkan()
 	_graphicsQueueFamily = vkbDevice.get_queue_index(vkb::QueueType::graphics).value();
 
 	// Initialize Vulkan Memory Allocator
-	VmaAllocatorCreateInfo allocatorInfo = {};
+	vma::AllocatorCreateInfo allocatorInfo = {};
 	allocatorInfo.physicalDevice = _chosenGPU;
 	allocatorInfo.device = _device;
 	allocatorInfo.instance = _instance;
-	allocatorInfo.flags = VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT;
-	vmaCreateAllocator(&allocatorInfo, &_allocator);
+	allocatorInfo.flags = vma::AllocatorCreateFlagBits::eBufferDeviceAddress;
+	VK_CHECK(vma::createAllocator(&allocatorInfo, &_allocator));
 }
 
 //> swapchain
@@ -146,12 +146,12 @@ void VkSREngine::init_swapchain() {
 	vk::ImageCreateInfo rimg_info = vkinit::image_create_info(_drawImage.imageFormat, drawImageUsages, drawImageExtent);
 
 	// For the draw image, allocate it from GPU-local memory
-	VmaAllocationCreateInfo rimg_allocinfo = {};
-	rimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
-	rimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	vma::AllocationCreateInfo rimg_allocinfo = {};
+	rimg_allocinfo.usage = vma::MemoryUsage::eGpuOnly;
+	rimg_allocinfo.requiredFlags = vk::MemoryPropertyFlagBits::eDeviceLocal;
 
 	// Allocate and create the draw image
-	vmaCreateImage(_allocator, reinterpret_cast<VkImageCreateInfo*>(&rimg_info), &rimg_allocinfo, reinterpret_cast<VkImage*>(&_drawImage.image), &_drawImage.allocation, nullptr);
+	VK_CHECK(_allocator.createImage(&rimg_info, &rimg_allocinfo, &_drawImage.image, &_drawImage.allocation, nullptr ));
 
 	vk::ImageViewCreateInfo rview_info = vkinit::imageview_create_info(_drawImage.imageFormat, _drawImage.image, vk::ImageAspectFlagBits::eColor);
 
@@ -169,7 +169,7 @@ void VkSREngine::init_swapchain() {
 	vk::ImageCreateInfo dimg_info = vkinit::image_create_info(_depthImage.imageFormat, depthImageUsages, drawImageExtent);
 
 	// Allocate and create the draw image
-	vmaCreateImage(_allocator, reinterpret_cast<VkImageCreateInfo*>(&dimg_info), &rimg_allocinfo, reinterpret_cast<VkImage*>(&_depthImage.image), &_depthImage.allocation, nullptr);
+	VK_CHECK(_allocator.createImage(&dimg_info, &rimg_allocinfo, &_depthImage.image, &_depthImage.allocation, nullptr));
 
 	vk::ImageViewCreateInfo dview_info = vkinit::imageview_create_info(_depthImage.imageFormat, _depthImage.image, vk::ImageAspectFlagBits::eDepth);
 	VK_CHECK(_device.createImageView(&dview_info, nullptr, &_depthImage.imageView));
@@ -179,10 +179,10 @@ void VkSREngine::init_swapchain() {
 	// Add to deletion queue
 	_mainDeletionQueue.push_function([=]() {
 		_device.destroyImageView(_drawImage.imageView, nullptr);
-		vmaDestroyImage(_allocator, _drawImage.image, _drawImage.allocation);
+		_allocator.destroyImage(_drawImage.image, _drawImage.allocation);
 
 		_device.destroyImageView(_depthImage.imageView, nullptr);
-		vmaDestroyImage(_allocator, _depthImage.image, _depthImage.allocation);
+		_allocator.destroyImage(_depthImage.image, nullptr);
 		});
 }
 
@@ -299,8 +299,8 @@ void VkSREngine::cleanup()
 
 		_instance.destroySurfaceKHR(_surface);
 
-		vmaDestroyAllocator(_allocator);
-
+		_allocator.destroy();
+		
 		_device.destroy();
 
 		vkb::destroy_debug_utils_messenger(_instance, _debug_messenger);

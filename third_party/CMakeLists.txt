@@ -20,7 +20,9 @@ add_subdirectory(SDL)
 add_library(sdl INTERFACE)
 target_link_libraries(sdl INTERFACE SDL3::SDL3)
 
-## Vulkan Memory Allocator
-add_subdirectory(VulkanMemoryAllocator)
+## Vulkan Memory Allocator (HPP bindings!)
+#add_subdirectory(VulkanMemoryAllocator-Hpp/Vulkan-Headers)
+add_subdirectory(VulkanMemoryAllocator-Hpp/VulkanMemoryAllocator)
+add_subdirectory(VulkanMemoryAllocator-Hpp)
 add_subdirectory(glm)
 
