@@ -22,8 +22,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE sdl)
 # main
 target_link_libraries (${PROJECT_NAME} PUBLIC
 	Vulkan::Vulkan
-	GPUOpen::VulkanMemoryAllocator
-	VulkanMemoryAllocator-Hpp::VulkanMemoryAllocator-Hpp
 	fmt::fmt
 	vkbootstrap
 	glm::glm
