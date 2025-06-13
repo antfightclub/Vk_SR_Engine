@@ -9,7 +9,7 @@ vk::CommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyI
 	return info;
 }
 
-vk::CommandBufferAllocateInfo vkinit::command_buffer_allocate_info(vk::CommandPool pool, uint32_t count = 1) {
+vk::CommandBufferAllocateInfo vkinit::command_buffer_allocate_info(vk::CommandPool pool, uint32_t count) {
 	vk::CommandBufferAllocateInfo info = {};
 	info.commandPool = pool;
 	info.commandBufferCount = count;
