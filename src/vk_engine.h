@@ -36,18 +36,20 @@ public:
 	struct SDL_Window* _window{ nullptr };
 	static VkSREngine& Get();
 	
+	// Vulkan instance and device related
 	vk::Instance _instance;
 	VkSurfaceKHR _surface;
 	vk::PhysicalDevice _chosenGPU;
 	vk::Device _device;
 	vk::DebugUtilsMessengerEXT _debug_messenger;
-	
 	vk::Queue _graphicsQueue;
 	uint32_t _graphicsQueueFamily;
 	
+	// Allocation and deletion
 	DeletionQueue _mainDeletionQueue;
 	VmaAllocator _allocator;
 
+	// Swapchain
 	vk::SwapchainKHR _swapchain;
 	vk::Format _swapchainImageFormat;
 
@@ -56,6 +58,12 @@ public:
 	vk::Extent2D _swapchainExtent;
 	uint32_t _swapchainImageCount;
 	std::vector<vk::Semaphore> _readyForPresentSemaphores;
+
+	// Draw and depth images
+	AllocatedImage _drawImage;
+	AllocatedImage _depthImage;
+	vk::Extent2D _drawExtent;
+	float renderScale = 1.f;
 
 
 	void init();
