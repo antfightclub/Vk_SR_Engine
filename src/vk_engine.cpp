@@ -67,6 +67,37 @@ void VkSREngine::init_vulkan()
 	_debug_messenger = vkb_inst.debug_messenger;
 
 	SDL_Vulkan_CreateSurface(_window, _instance, VK_NULL_HANDLE, &_surface);
+
+	// Choose features from different spec versions
+	
+	// Vulkan 1.3 features
+	vk::PhysicalDeviceVulkan13Features features13 {};
+	features13.dynamicRendering = true;
+	features13.synchronization2 = true;
+
+	// Vulkan 1.2 features
+	vk::PhysicalDeviceVulkan12Features features12{};
+	features12.bufferDeviceAddress = true;
+	features12.descriptorIndexing = true;
+
+	// Use VkBootstrap to select a GPU
+	vkb::PhysicalDeviceSelector selector{ vkb_inst };
+	vkb::PhysicalDevice physicalDevice = selector
+		.set_minimum_version(1, 4)
+		.set_required_features_13(features13)
+		.set_required_features_12(features12)
+		.set_surface(_surface)
+		.select()
+		.value();
+
+	// Create the final vulkan device
+	vkb::DeviceBuilder deviceBuilder{ physicalDevice };
+
+	vkb::Device vkbDevice = deviceBuilder.build().value();
+
+	// Get the VkDevice and VkPhysicalDevice handles used in the rest of the vulkan application
+	_device = vkbDevice.device;
+	_chosenGPU = physicalDevice.physical_device;
 }
 
 void VkSREngine::cleanup() 
