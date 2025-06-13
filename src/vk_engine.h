@@ -32,8 +32,8 @@ public:
 	vk::SwapchainKHR _swapchain;
 	vk::Format _swapchainImageFormat;
 
-	std::vector<vk::Image> _swapchainImages;
-	std::vector<vk::ImageView> _swapchainImageViews;
+	std::vector<VkImage> _swapchainImages;
+	std::vector<VkImageView> _swapchainImageViews;
 	vk::Extent2D _swapchainExtent;
 	uint32_t _swapchainImageCount;
 	std::vector<vk::Semaphore> _readyForPresentSemaphores;
