@@ -15,9 +15,15 @@
 #include <vulkan/vulkan.hpp> // using the HPP bindings
 #include <vulkan/vk_enum_string_helper.h>
 
+// Vulkan Memory Allocator
+#include "vk_mem_alloc.h"
+
 // fmt library for better console printouts
 #include <fmt/core.h>
 
+// GL Math likely to be used across the engine
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 
 // Macro to check Vulkan error codes to eas use of most vulkan functions
 #define VK_CHECK(x)															\
