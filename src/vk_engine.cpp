@@ -51,6 +51,10 @@ void VkSREngine::init()
 	_largestExtent.setWidth((uint32_t)largestWidth);
 
 	init_vulkan();
+	
+	init_swapchain();
+
+	init_commands();
 
 	_isInitialized = true;
 }
@@ -249,7 +253,7 @@ void VkSREngine::resize_swapchain() {
 }
 //< swapchain
 
-//> commands
+//> init_commands
 void VkSREngine::init_commands() {
 	// Create a command pool for commands submitted to the graphics queue
 	// The pool will allow for resetting of individual command buffers
@@ -280,7 +284,7 @@ void VkSREngine::init_commands() {
 		_device.destroyCommandPool(_immCommandPool, nullptr);
 		});
 }
-//< commands
+//< init_commands
 
 //> cleanup
 void VkSREngine::cleanup() 
