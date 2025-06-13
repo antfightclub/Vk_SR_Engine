@@ -34,3 +34,12 @@ do {																		\
 			abort();														\
 		}																	\
 } while (0)
+
+
+struct AllocatedImage {
+	vk::Image image;
+	vk::ImageView imageView;
+	VmaAllocation allocation;
+	vk::Extent3D imageExtent;
+	vk::Format imageFormat;
+};
