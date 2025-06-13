@@ -152,7 +152,18 @@ void VkSREngine::destroy_swapchain() {
 }
 
 void VkSREngine::resize_swapchain() {
+	_device.waitIdle();
 
+	destroy_swapchain();
+
+	int w, h;
+	SDL_GetWindowSize(_window, &w, &h);
+	_windowExtent.width = w;
+	_windowExtent.height = h;
+
+	create_swapchain(_windowExtent.width, _windowExtent.height);
+
+	resize_requested = false;
 }
 
 void VkSREngine::cleanup() 
