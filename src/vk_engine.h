@@ -17,6 +17,12 @@ public:
 
 	struct SDL_Window* _window{ nullptr };
 	static VkSREngine& Get();
+
+	VkInstance _instance;
+	VkSurfaceKHR _surface;
+	VkPhysicalDevice _chosenGPU;
+	VkDevice _device;
+	VkDebugUtilsMessengerEXT _debug_messenger;
 	
 	void init();
 

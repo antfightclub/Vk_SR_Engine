@@ -50,7 +50,23 @@ void VkSREngine::init()
 
 void VkSREngine::init_vulkan() 
 {
-	// Nothing yet
+	// Using vk-bootstrap to initialize vulkan instance
+	vkb::InstanceBuilder builder;
+
+	// Make a vulkan instance with basic debug features
+	auto inst_ret = builder.set_app_name("VkSREngine")
+		.request_validation_layers(bUseValidationLayers)
+		.use_default_debug_messenger()
+		.require_api_version(1, 3, 0)
+		.build();
+
+	vkb::Instance vkb_inst = inst_ret.value();
+
+	// Grab the instance and debug messenger callback
+	_instance = vkb_inst.instance;
+	_debug_messenger = vkb_inst.debug_messenger;
+
+	SDL_Vulkan_CreateSurface(_window, _instance, VK_NULL_HANDLE, &_surface);
 }
 
 void VkSREngine::cleanup() 
