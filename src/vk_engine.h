@@ -76,6 +76,7 @@ public:
 private:
 	void init_vulkan();
 	void init_swapchain();
+	void init_commands(); 
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();

@@ -119,6 +119,7 @@ void VkSREngine::init_vulkan()
 	vmaCreateAllocator(&allocatorInfo, &_allocator);
 }
 
+//> swapchain
 void VkSREngine::init_swapchain() {
 	create_swapchain(_windowExtent.width, _windowExtent.height);
 	//> drawimage
@@ -246,7 +247,15 @@ void VkSREngine::resize_swapchain() {
 
 	resize_requested = false;
 }
+//< swapchain
 
+//> commands
+void VkSREngine::init_commands() {
+
+}
+//< commands
+
+//> cleanup
 void VkSREngine::cleanup() 
 {
 	if (_isInitialized) {
@@ -270,6 +279,7 @@ void VkSREngine::cleanup()
 		SDL_DestroyWindow(_window);
 	}
 }
+//< cleanup
 
 void VkSREngine::run() 
 {
