@@ -143,7 +143,12 @@ void VkSREngine::create_swapchain(uint32_t width, uint32_t height) {
 }
 
 void VkSREngine::destroy_swapchain() {
+	vkDestroySwapchainKHR(_device, _swapchain, nullptr);
 
+	// Destroy swapchain resources
+	for (int i = 0; i < _swapchainImageViews.size(); i++) {
+		vkDestroyImageView(_device, _swapchainImageViews[i], nullptr);
+	}
 }
 
 void VkSREngine::resize_swapchain() {
