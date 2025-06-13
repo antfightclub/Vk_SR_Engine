@@ -29,12 +29,28 @@ public:
 
 	VmaAllocator _allocator;
 
+	vk::SwapchainKHR _swapchain;
+	vk::Format _swapchainImageFormat;
+
+	std::vector<vk::Image> _swapchainImages;
+	std::vector<vk::ImageView> _swapchainImageViews;
+	vk::Extent2D _swapchainExtent;
+	uint32_t _swapchainImageCount;
+	std::vector<vk::Semaphore> _readyForPresentSemaphores;
+
+
 	void init();
 
 	void run();
 
 	void cleanup();
 
+
 private:
 	void init_vulkan();
+	void init_swapchain();
+
+	void create_swapchain(uint32_t width, uint32_t height);
+	void resize_swapchain();
+	void destroy_swapchain();
 };
