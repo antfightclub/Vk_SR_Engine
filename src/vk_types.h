@@ -13,6 +13,7 @@
 
 // Vulkan includes
 #include <vulkan/vulkan.hpp> // using the HPP bindings
+#include <vulkan/vulkan_to_string.hpp>
 #include <vulkan/vk_enum_string_helper.h>
 
 // Vulkan Memory Allocator
@@ -28,9 +29,9 @@
 // Macro to check Vulkan error codes to eas use of most vulkan functions
 #define VK_CHECK(x)															\
 do {																		\
-	VkResult err = x;														\
-	if (err) {																\
-		fmt::println("Detected Vulkan error: {}", string_VkResult(err));	\
+	vk::Result err = x;														\
+	if (err != vk::Result::eSuccess) {																\
+		fmt::println("Detected Vulkan error: {}", to_string(err));	\
 			abort();														\
 		}																	\
 } while (0)
