@@ -12,17 +12,17 @@ public:
 	bool stop_rendering{ false };
 	bool resize_requested{ false };
 
-	VkExtent2D _windowExtent{ 1920, 1080 };
-	VkExtent2D _largestExtent{ 2560, 1440 };
+	vk::Extent2D _windowExtent{ 1920, 1080 };
+	vk::Extent2D _largestExtent{ 2560, 1440 };
 
 	struct SDL_Window* _window{ nullptr };
 	static VkSREngine& Get();
-
-	VkInstance _instance;
+	
+	vk::Instance _instance;
 	VkSurfaceKHR _surface;
-	VkPhysicalDevice _chosenGPU;
-	VkDevice _device;
-	VkDebugUtilsMessengerEXT _debug_messenger;
+	vk::PhysicalDevice _chosenGPU;
+	vk::Device _device;
+	vk::DebugUtilsMessengerEXT _debug_messenger;
 	
 	void init();
 
