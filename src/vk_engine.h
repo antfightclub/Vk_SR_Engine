@@ -82,12 +82,18 @@ public:
 	FrameData _frames[FRAME_OVERLAP];
 	FrameData& get_current_frame() { return _frames[_frameNumber % FRAME_OVERLAP]; };
 
+	// Immediate submit structures
+	vk::Fence _immFence;
+	vk::CommandBuffer _immCommandBuffer;
+	vk::CommandPool _immCommandPool;
+
 	void init();
 
 	void run();
 
 	void cleanup();
 
+	void immediate_submit();
 
 private:
 	void init_vulkan();
