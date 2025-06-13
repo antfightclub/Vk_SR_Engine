@@ -23,6 +23,18 @@ struct DeletionQueue
 	}
 };
 
+struct FrameData 
+{
+	vk::Semaphore _swapchainSemaphore, _renderSemaphore;
+	vk::Fence _renderFence;
+
+	vk::CommandPool _commandPool;
+	vk::CommandBuffer _mainCommandBuffer;
+
+	DeletionQueue _deletionQueue;
+
+};
+
 class VkSREngine {
 public:
 	bool _isInitialized{ false };
@@ -65,6 +77,10 @@ public:
 	vk::Extent2D _drawExtent;
 	float renderScale = 1.f;
 
+
+	// Per frame structures
+	FrameData _frames[FRAME_OVERLAP];
+	FrameData& get_current_frame() { return _frames[_frameNumber % FRAME_OVERLAP]; };
 
 	void init();
 
