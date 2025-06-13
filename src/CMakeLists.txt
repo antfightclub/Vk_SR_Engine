@@ -18,6 +18,7 @@ target_link_libraries (${PROJECT_NAME} PUBLIC
 	Vulkan::Vulkan
 	fmt::fmt
 	vkbootstrap
+	GPUOpen::VulkanMemoryAllocator
 	)
 
 target_precompile_headers (${PROJECT_NAME} PUBLIC

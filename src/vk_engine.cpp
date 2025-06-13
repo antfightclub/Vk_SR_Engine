@@ -14,6 +14,10 @@
 //#include "../third_party/vk-bootstrap/src/VkBootstrap.
 #include "VkBootstrap.h"
 
+// Vulkan Memory Allocator to help with memory allocation
+#define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h"
+
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
 constexpr bool bUseValidationLayers = true;
