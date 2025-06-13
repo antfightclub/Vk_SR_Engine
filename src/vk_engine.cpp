@@ -31,8 +31,21 @@ void VkSREngine::init()
 	assert(loadedEngine == nullptr);
 	loadedEngine = this;
 
-	SDL_Log("%s", "Hello, VkSREngine with SDL3!");
-	fmt::println("Hello, VkSREngine with fmt!");
+	// Initialize SDL and create a window with it
+	SDL_Init(SDL_INIT_VIDEO);
+
+	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE);
+
+	_window = SDL_CreateWindow(
+		"Vk SR Engine",
+		_windowExtent.width,
+		_windowExtent.height,
+		window_flags
+	);
+
+	init_vulkan();
+
+	_isInitialized = true;
 }
 
 void VkSREngine::init_vulkan() 
@@ -42,7 +55,9 @@ void VkSREngine::init_vulkan()
 
 void VkSREngine::cleanup() 
 {
-	// Nothing yet
+	if (_isInitialized) {
+		SDL_DestroyWindow(_window);
+	}
 }
 
 void VkSREngine::run() 
