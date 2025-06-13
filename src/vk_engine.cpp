@@ -6,6 +6,7 @@
 #include <SDL3/SDL_vulkan.h>
 
 #include <vk_types.h>
+#include <vk_initializers.h>
 
 // Simplify Vulkan initialization
 #include "VkBootstrap.h"
@@ -128,6 +129,24 @@ void VkSREngine::init_swapchain() {
 		1
 	};
 
+	_drawImage.imageFormat = vk::Format::eR16G16B16A16Sfloat;
+	_drawImage.imageExtent = drawImageExtent;
+
+	vk::ImageUsageFlags drawImageUsages{
+		  vk::ImageUsageFlagBits::eTransferSrc
+		| vk::ImageUsageFlagBits::eStorage
+		| vk::ImageUsageFlagBits::eColorAttachment
+	};
+
+	vk::ImageCreateInfo rimg_info = vkinit::image_create_info(_drawImage.imageFormat, drawImageUsages, drawImageExtent);
+
+	// For the draw image, allocate it from GPU-local memory
+	VmaAllocationCreateInfo rimg_allocinfo = {};
+	rimg_allocinfo.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+	rimg_allocinfo.requiredFlags = VkMemoryPropertyFlags(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+	// Allocate and create the draw image
+	vmaCreateImage(_allocator, reinterpret_cast<VkImageCreateInfo*>(&rimg_info), &rimg_allocinfo, reinterpret_cast<VkImage*>(&_drawImage.image), &_drawImage.allocation, nullptr);
 
 }
 
