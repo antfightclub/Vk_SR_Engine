@@ -6,7 +6,6 @@ find_package(Vulkan REQUIRED)
 ## fmt for console printouts
 add_subdirectory(fmt EXCLUDE_FROM_ALL)
 
-
 ## vkbootstrap
 file(GLOB VKBOOTSTRAP_SOURCES "vk-bootstrap/src/*.h" "vk-bootstrap/src/*.cpp")
 add_library(vkbootstrap STATIC ${VKBOOTSTRAP_SOURCES})
@@ -20,9 +19,7 @@ add_subdirectory(SDL)
 add_library(sdl INTERFACE)
 target_link_libraries(sdl INTERFACE SDL3::SDL3)
 
-## Vulkan Memory Allocator (HPP bindings!)
-#add_subdirectory(VulkanMemoryAllocator-Hpp/Vulkan-Headers)
-#add_subdirectory(VulkanMemoryAllocator-Hpp/VulkanMemoryAllocator)
-#add_subdirectory(VulkanMemoryAllocator-Hpp)
+# Had to do VMA-HPP in the root CMakeLists.
+
 add_subdirectory(glm)
 

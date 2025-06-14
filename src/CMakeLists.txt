@@ -1,5 +1,4 @@
 #Vk_SR_Engine\src\
-
 add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE 
 	main.cpp
@@ -14,10 +13,9 @@ set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
 target_include_directories (${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
+
 # SDL
 target_link_libraries(${PROJECT_NAME} PRIVATE sdl)
-
-# VMA-Hpp
 
 # main
 target_link_libraries (${PROJECT_NAME} PUBLIC

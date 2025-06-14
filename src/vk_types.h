@@ -14,7 +14,6 @@
 // Vulkan includes
 #include <vulkan/vulkan.hpp> // using the HPP bindings
 #include <vulkan/vulkan_to_string.hpp>
-#include <vulkan/vk_enum_string_helper.h>
 
 // Vulkan Memory Allocator
 #include "vk_mem_alloc.hpp"

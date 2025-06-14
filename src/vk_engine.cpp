@@ -13,6 +13,7 @@
 
 // Vulkan Memory Allocator to help with memory allocation
 #define VMA_IMPLEMENTATION
+#include "vk_mem_alloc.h" // For some reason I *need* to have this here in this order, otherwise linker errors!
 #include "vk_mem_alloc.hpp"
 
 #include <chrono>
