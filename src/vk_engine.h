@@ -2,6 +2,7 @@
 //vk_engine.h
 
 #include <vk_types.h>
+#include <vk_descriptors.h>
 
 constexpr unsigned int FRAME_OVERLAP = 2;
 

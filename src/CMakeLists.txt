@@ -7,6 +7,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_types.h
 	vk_initializers.h
 	vk_initializers.cpp
+	vk_descriptors.h
+	vk_descriptors.cpp
 	)
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
