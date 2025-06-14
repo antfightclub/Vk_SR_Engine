@@ -99,6 +99,8 @@ public:
 	// Compute related
 	std::vector<ComputeEffect> _computeEffects;
 	int _currentBackgroundEffect{ 0 };
+	vk::Pipeline _computePipeline;
+	vk::PipelineLayout _computePipelineLayout;
 
 	void init();
 

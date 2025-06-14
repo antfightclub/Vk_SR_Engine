@@ -16,6 +16,8 @@
 #include "vk_mem_alloc.h" // For some reason I *need* to have this here in this order, otherwise linker errors!
 #include "vk_mem_alloc.hpp"
 
+#include <vk_pipelines.h>
+
 #include <chrono>
 #include <thread>
 
@@ -395,6 +397,56 @@ void VkSREngine::init_pipelines() {
 }
 
 void VkSREngine::init_compute_pipelines() {
+	vk::PipelineLayoutCreateInfo computeLayout = {};
+	computeLayout.pSetLayouts = &_drawImageDescriptorLayout;
+	computeLayout.setLayoutCount = 1;
+
+	vk::PushConstantRange pushConstant = {};
+	pushConstant.offset = 0;
+	pushConstant.size = sizeof(ComputePushConstants);
+	pushConstant.stageFlags = vk::ShaderStageFlagBits::eCompute;
+
+	computeLayout.pPushConstantRanges = &pushConstant;
+	computeLayout.pushConstantRangeCount = 1;
+
+	VK_CHECK(_device.createPipelineLayout(&computeLayout, nullptr, &_computePipelineLayout));
+
+	vk::ShaderModule frostyShader;
+	const char* frostyPath = "../../shaders/frosty.comp.spv";
+	if (!vkutil::load_shader_module(frostyPath, _device, &frostyShader)) {
+		fmt::println("Error when building the shader module at path: {}", frostyPath);
+	}
+
+	vk::PipelineShaderStageCreateInfo stageInfo = {};
+	stageInfo.stage = vk::ShaderStageFlagBits::eCompute;
+	stageInfo.module = frostyShader;
+	stageInfo.pName = "main";
+
+	vk::ComputePipelineCreateInfo computePipelineCreateInfo = {};
+	computePipelineCreateInfo.layout = _computePipelineLayout;
+	computePipelineCreateInfo.stage = stageInfo;
+
+	// Frosty
+	ComputeEffect frosty;
+	frosty.layout = _computePipelineLayout;
+	frosty.name = "Frosty";
+	frosty.data = {};
+
+	VK_CHECK(_device.createComputePipelines(VK_NULL_HANDLE, 1, &computePipelineCreateInfo, nullptr, &frosty.pipeline));
+
+	// Can change just the shadermodule part of computePipelineCreateInfo to create other pipelines, to reuse instead of making a new createinfo.
+	// Only makes sense if all compute shaders share the same layout, though.
+	_computeEffects.push_back(frosty);
+
+	// Destroy CPU-local shader module, since it has been loaded into the GPU on createComputePipelines
+	_device.destroyShaderModule(frostyShader);
+
+	// Add pipeline to deletion queue
+	_mainDeletionQueue.push_function([=]() {
+		_device.destroyPipelineLayout(_computePipelineLayout, nullptr);
+		// When adding new compute effects, remember to add them in opposite order for destruction to ensure valid API usage
+		_device.destroyPipeline(frosty.pipeline , nullptr);
+		})
 
 }
 //< init_pipelines
