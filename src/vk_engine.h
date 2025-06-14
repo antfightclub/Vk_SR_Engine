@@ -4,6 +4,8 @@
 #include <vk_types.h>
 #include <vk_descriptors.h>
 
+#include "compute_structs.h"
+
 constexpr unsigned int FRAME_OVERLAP = 2;
 
 struct DeletionQueue
