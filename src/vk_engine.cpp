@@ -286,6 +286,13 @@ void VkSREngine::init_commands() {
 }
 //< init_commands
 
+//> init_sync_structures
+void VkSREngine::init_sync_structures() {
+	
+}
+//< init_sync_structures
+
+
 //> cleanup
 void VkSREngine::cleanup() 
 {
