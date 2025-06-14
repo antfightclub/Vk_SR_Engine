@@ -66,9 +66,8 @@ vk::FenceCreateInfo vkinit::fence_create_info(vk::FenceCreateFlags flags) {
 	return info;
 }
 
-vk::SemaphoreCreateInfo vkinit::semaphore_create_info(vk::SemaphoreCreateFlags flags) {
+vk::SemaphoreCreateInfo vkinit::semaphore_create_info() {
 	vk::SemaphoreCreateInfo info = {};
-	info.flags = flags;
 	
 	return info;
 }

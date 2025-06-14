@@ -17,6 +17,6 @@ namespace vkinit
 
 	//> init_sync_structures
 	vk::FenceCreateInfo fence_create_info(vk::FenceCreateFlags flags);
-	vk::SemaphoreCreateInfo semaphore_create_info(vk::SemaphoreCreateFlags flags);
+	vk::SemaphoreCreateInfo semaphore_create_info(/*vk::SemaphoreCreateFlags flags*/);
 	//< init_sync_structures
 }
