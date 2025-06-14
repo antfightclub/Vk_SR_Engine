@@ -46,7 +46,7 @@ void DescriptorAllocator::init_pool(vk::Device device, uint32_t maxSets, std::sp
 	pool_info.poolSizeCount = (uint32_t)poolSizes.size();
 	pool_info.pPoolSizes = poolSizes.data();
 
-	device.createDescriptorPool(&pool_info, nullptr, &pool);
+	VK_CHECK(device.createDescriptorPool(&pool_info, nullptr, &pool));
 }
 
 void DescriptorAllocator::clear_descriptors(vk::Device device) {
@@ -173,5 +173,52 @@ vk::DescriptorPool DescriptorAllocatorGrowable::create_pool(vk::Device device, u
 //< DescriptorAllocatorGrowable
 
 //> DescriptorWriter
+void DescriptorWriter::write_image(int binding, vk::ImageView image, vk::Sampler sampler, vk::ImageLayout layout, vk::DescriptorType type) {
+	vk::DescriptorImageInfo& info = imageInfos.emplace_back(vk::DescriptorImageInfo{
+		sampler,
+		image,
+		layout
+		});
+	
+	vk::WriteDescriptorSet write = {};
+	write.dstBinding = binding;
+	write.dstSet = VK_NULL_HANDLE; // Left empty for now until we need to write it
+	write.descriptorCount = 1;
+	write.descriptorType = type;
+	write.pImageInfo = &info;
 
+	writes.push_back(write);
+}
+
+void DescriptorWriter::write_buffer(int binding, vk::Buffer buffer, size_t size, size_t offset, vk::DescriptorType type) {
+	vk::DescriptorBufferInfo& info = bufferInfos.emplace_back(vk::DescriptorBufferInfo{
+		buffer,
+		offset,
+		size
+		});
+
+	vk::WriteDescriptorSet write = {};
+	write.dstBinding = binding;
+	write.dstSet = VK_NULL_HANDLE; // Left empty for now until we need to write it
+	write.descriptorCount = 1;
+	write.descriptorType = type;
+	write.pBufferInfo = &info;
+	
+	writes.push_back(write);
+}
+
+void DescriptorWriter::clear() {
+	imageInfos.clear();
+	writes.clear();
+	bufferInfos.clear();
+}
+
+void DescriptorWriter::update_set(vk::Device device, vk::DescriptorSet set) {
+	for (vk::WriteDescriptorSet& write : writes) {
+		write.dstSet = set;
+	}
+
+	// Not encapsulated in a VK_CHECK since this command doesn't return anything (void)
+	device.updateDescriptorSets((uint32_t)writes.size(), writes.data(), 0, nullptr);
+}
 //< DescriptorWriter
