@@ -26,6 +26,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers GPUOpen::VulkanMem
 
 
 # Shader compilation
+find_program(GLSL_VALIDATOR glslangValidator HINTS /usr/bin/ /usr/local/bin $ENV{VULKAN_SDK}/Bin/ $ENV{VULKAN_SDK}/Bin32/)
+
 file(GLOB_RECURSE GLSL_SOURCE_FILES
 	"${PROJECT_SOURCE_DIR}/shaders/*.frag"	# Fragment shaders
 	"${PROJECT_SOURCE_DIR}/shaders/*.vert"	# Vertex   shaders
