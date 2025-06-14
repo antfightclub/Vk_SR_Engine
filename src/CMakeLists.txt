@@ -9,6 +9,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_initializers.cpp
 	vk_descriptors.h
 	vk_descriptors.cpp
+	vk_pipelines.h
+	vk_pipelines.cpp
 	compute_structs.h
 	)
 
