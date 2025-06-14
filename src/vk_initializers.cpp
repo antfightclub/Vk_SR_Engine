@@ -16,6 +16,35 @@ vk::CommandBufferAllocateInfo vkinit::command_buffer_allocate_info(vk::CommandPo
 	info.level = vk::CommandBufferLevel::ePrimary;
 	return info;
 }
+
+vk::CommandBufferBeginInfo vkinit::command_buffer_begin_info(vk::CommandBufferUsageFlags flags) {
+	vk::CommandBufferBeginInfo info = {};
+	info.pInheritanceInfo = nullptr;
+	info.flags = flags;
+	return info;
+}
+
+vk::CommandBufferSubmitInfo vkinit::command_buffer_submit_info(vk::CommandBuffer cmd) {
+	vk::CommandBufferSubmitInfo info = {};
+	info.commandBuffer = cmd;
+	info.deviceMask = 0;
+	return info;
+}
+
+vk::SubmitInfo2 submit_info(vk::CommandBufferSubmitInfo* cmd, vk::SemaphoreSubmitInfo* signalSemaphoreInfo, vk::SemaphoreSubmitInfo* waitSemaphoreInfo) {
+	vk::SubmitInfo2 info = {};
+
+	info.waitSemaphoreInfoCount = waitSemaphoreInfo == nullptr ? 0 : 1;
+	info.pWaitSemaphoreInfos = waitSemaphoreInfo;
+
+	info.signalSemaphoreInfoCount = signalSemaphoreInfo == nullptr ? 0 : 1;
+	info.pSignalSemaphoreInfos = signalSemaphoreInfo;
+
+	info.commandBufferInfoCount = 1;
+	info.pCommandBufferInfos = cmd;
+
+	return info;
+}
 //< init_cmds
 
 //> init_images
