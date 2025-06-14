@@ -389,6 +389,34 @@ void VkSREngine::init_descriptors() {
 }
 //< init_descriptors
 
+
+//> immediate_submit
+void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function) {
+	VK_CHECK(_device.resetFences(1, &_immFence));
+	_immCommandBuffer.reset();
+
+	vk::CommandBuffer cmd = _immCommandBuffer;
+	vk::CommandBufferBeginInfo cmdBeginInfo = vkinit::command_buffer_begin_info(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+
+	_immCommandBuffer.begin(&cmdBeginInfo);
+
+	function(cmd);
+
+	_immCommandBuffer.end(cmd);
+
+	vk::CommandBufferSubmitInfo cmdSubmitInfo = vkinit::command_buffer_submit_info(cmd);
+
+	vk::SubmitInfo2 submit = vkinit::submit_info(&cmdSubmitInfo, nullptr, nullptr);
+
+	// Submit command buffer to the queue and execute it
+	// _immFence will now block until the graphic commands finish execution
+	VK_CHECK(_graphicsQueue.submit2(1, &submit, _immFence));
+
+	VK_CHECK(_device.waitForFences(1, &_immFence, true, 9999999999));
+
+}
+//< immediate_submit
+
 //> cleanup
 void VkSREngine::cleanup() 
 {
