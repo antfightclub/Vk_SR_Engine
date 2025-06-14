@@ -445,8 +445,8 @@ void VkSREngine::init_compute_pipelines() {
 	_mainDeletionQueue.push_function([=]() {
 		_device.destroyPipelineLayout(_computePipelineLayout, nullptr);
 		// When adding new compute effects, remember to add them in opposite order for destruction to ensure valid API usage
-		_device.destroyPipeline(frosty.pipeline , nullptr);
-		})
+		_device.destroyPipeline(frosty.pipeline, nullptr);
+		});
 
 }
 //< init_pipelines
