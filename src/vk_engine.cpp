@@ -389,6 +389,15 @@ void VkSREngine::init_descriptors() {
 }
 //< init_descriptors
 
+//> init_pipelines
+void VkSREngine::init_pipelines() {
+	init_compute_pipelines();
+}
+
+void VkSREngine::init_compute_pipelines() {
+
+}
+//< init_pipelines
 
 //> immediate_submit
 void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function) {
