@@ -33,7 +33,7 @@ struct FrameData
 	vk::CommandBuffer _mainCommandBuffer;
 
 	DeletionQueue _deletionQueue;
-
+	DescriptorAllocatorGrowable _frameDescriptors;
 };
 
 class VkSREngine {
