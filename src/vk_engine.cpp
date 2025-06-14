@@ -45,11 +45,10 @@ void VkSREngine::init()
 		window_flags
 	);
 
-	int largestWidth{ 0 };
-	int largestHeight{ 0 };
-	SDL_GetWindowMaximumSize(_window, &largestWidth, &largestHeight);
-	_largestExtent.setHeight((uint32_t)largestHeight);
-	_largestExtent.setWidth((uint32_t)largestWidth);
+
+	const SDL_DisplayMode* DM = SDL_GetCurrentDisplayMode(1);
+	_largestExtent.setHeight((uint32_t)DM->h);
+	_largestExtent.setWidth((uint32_t)DM->w);
 
 	init_vulkan();
 	
@@ -69,7 +68,7 @@ void VkSREngine::init_vulkan()
 	auto inst_ret = builder.set_app_name("VkSREngine")
 		.request_validation_layers(bUseValidationLayers)
 		.use_default_debug_messenger()
-		.require_api_version(1, 3, 0)
+		.require_api_version(1, 3)
 		.build();
 
 	vkb::Instance vkb_inst = inst_ret.value();
@@ -95,7 +94,7 @@ void VkSREngine::init_vulkan()
 	// Use VkBootstrap to select a GPU
 	vkb::PhysicalDeviceSelector selector{ vkb_inst };
 	vkb::PhysicalDevice physicalDevice = selector
-		.set_minimum_version(1, 4)
+		.set_minimum_version(1, 3)
 		.set_required_features_13(features13)
 		.set_required_features_12(features12)
 		.set_surface(_surface)
@@ -183,7 +182,7 @@ void VkSREngine::init_swapchain() {
 		_allocator.destroyImage(_drawImage.image, _drawImage.allocation);
 
 		_device.destroyImageView(_depthImage.imageView, nullptr);
-		_allocator.destroyImage(_depthImage.image, nullptr);
+		_allocator.destroyImage(_depthImage.image, _depthImage.allocation);
 		});
 }
 
