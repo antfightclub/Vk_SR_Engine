@@ -88,6 +88,11 @@ public:
 	vk::CommandBuffer _immCommandBuffer;
 	vk::CommandPool _immCommandPool;
 
+	// Descriptors
+	DescriptorAllocator globalDescriptorAllocator;
+	vk::DescriptorSet _drawImageDescriptors;
+	vk::DescriptorSetLayout _drawImageDescriptorLayout;
+
 	void init();
 
 	void run();
@@ -101,6 +106,7 @@ private:
 	void init_swapchain();
 	void init_commands(); 
 	void init_sync_structures();
+	void init_descriptors();
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();
