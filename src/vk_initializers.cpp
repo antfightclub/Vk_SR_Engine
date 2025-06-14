@@ -57,3 +57,19 @@ vk::ImageViewCreateInfo vkinit::imageview_create_info(vk::Format format, vk::Ima
 	return info;
 }
 //< init_images
+
+//> init_sync_structures
+vk::FenceCreateInfo vkinit::fence_create_info(vk::FenceCreateFlags flags) {
+	vk::FenceCreateInfo info = {};
+	info.flags = flags;
+
+	return info;
+}
+
+vk::SemaphoreCreateInfo vkinit::semaphore_create_info(vk::SemaphoreCreateFlags flags) {
+	vk::SemaphoreCreateInfo info = {};
+	info.flags = flags;
+	
+	return info;
+}
+//< init_sync_structures

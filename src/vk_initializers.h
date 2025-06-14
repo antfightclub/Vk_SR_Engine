@@ -14,4 +14,9 @@ namespace vkinit
 	vk::ImageCreateInfo image_create_info(vk::Format format, vk::ImageUsageFlags usageFlags, vk::Extent3D extent);
 	vk::ImageViewCreateInfo imageview_create_info(vk::Format format, vk::Image image, vk::ImageAspectFlags aspectFlags);
 	//< init_images
+
+	//> init_sync_structures
+	vk::FenceCreateInfo fence_create_info(vk::FenceCreateFlags flags);
+	vk::SemaphoreCreateInfo semaphore_create_info(vk::SemaphoreCreateFlags flags);
+	//< init_sync_structures
 }
