@@ -56,6 +56,8 @@ void VkSREngine::init()
 
 	init_commands();
 
+	init_sync_structures();
+
 	_isInitialized = true;
 }
 
@@ -288,7 +290,38 @@ void VkSREngine::init_commands() {
 
 //> init_sync_structures
 void VkSREngine::init_sync_structures() {
-	
+	// Create the fence for immediate submit and add it to deletion queue
+	vk::FenceCreateInfo fenceCreateInfo = vkinit::fence_create_info(vk::FenceCreateFlagBits::eSignaled);
+	VK_CHECK(_device.createFence(&fenceCreateInfo, nullptr, &_immFence));
+	_mainDeletionQueue.push_function([=]() { _device.destroyFence(_immFence, nullptr); });
+
+	// Create per-frame fences and semaphores and add to deletion queue
+	for (int i = 0; i < FRAME_OVERLAP; i++) {
+		VK_CHECK(_device.createFence(&fenceCreateInfo, nullptr, &_frames[i]._renderFence));
+
+		vk::SemaphoreCreateInfo semaphoreCreateInfo = vkinit::semaphore_create_info();
+
+		VK_CHECK(_device.createSemaphore(&semaphoreCreateInfo, nullptr, &_frames[i]._swapchainSemaphore));
+		VK_CHECK(_device.createSemaphore(&semaphoreCreateInfo, nullptr, &_frames[i]._renderSemaphore));
+
+		_mainDeletionQueue.push_function([=]() {
+			_device.destroyFence(_frames[i]._renderFence, nullptr);
+			_device.destroySemaphore(_frames[i]._swapchainSemaphore, nullptr);
+			_device.destroySemaphore(_frames[i]._renderSemaphore, nullptr);
+			});
+	}
+
+	// Initialize ready for present semaphores as per https://docs.vulkan.org/guide/latest/swapchain_semaphore_reuse.html
+	_readyForPresentSemaphores.resize(_swapchainImageCount);
+
+	for (int i = 0; i < _swapchainImageCount; i++) {
+		vk::SemaphoreCreateInfo semaphoreCreateInfo = vkinit::semaphore_create_info();
+		VK_CHECK(_device.createSemaphore(&semaphoreCreateInfo, nullptr, &_readyForPresentSemaphores[i]));
+
+		_mainDeletionQueue.push_function([=]() {
+			_device.destroySemaphore(_readyForPresentSemaphores[i], nullptr);
+			});
+	}
 }
 //< init_sync_structures
 
