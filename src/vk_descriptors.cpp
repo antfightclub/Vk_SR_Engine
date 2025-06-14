@@ -14,7 +14,7 @@ void DescriptorLayoutBuilder::clear() {
 	bindings.clear();
 }
 
-vk::DescriptorSetLayout DescriptorLayoutBuilder::build(vk::Device device, vk::ShaderStageFlags shaderStages, void* pNext = nullptr, vk::DescriptorSetLayoutCreateFlags flags) {
+vk::DescriptorSetLayout DescriptorLayoutBuilder::build(vk::Device device, vk::ShaderStageFlags shaderStages, void* pNext, vk::DescriptorSetLayoutCreateFlags flags) {
 	for (auto& b : bindings) {
 		b.stageFlags |= shaderStages;
 	}
@@ -28,6 +28,8 @@ vk::DescriptorSetLayout DescriptorLayoutBuilder::build(vk::Device device, vk::Sh
 
 	vk::DescriptorSetLayout set;
 	VK_CHECK(device.createDescriptorSetLayout(&info, nullptr, &set));
+
+	return set;
 }
 //< DescriptorLayoutBuilder
 
@@ -107,7 +109,7 @@ void DescriptorAllocatorGrowable::destroy_pools(vk::Device device) {
 	fullPools.clear();
 }
 
-vk::DescriptorSet  DescriptorAllocatorGrowable::allocate(vk::Device device, vk::DescriptorSetLayout layout, void* pNext = nullptr) {
+vk::DescriptorSet  DescriptorAllocatorGrowable::allocate(vk::Device device, vk::DescriptorSetLayout layout, void* pNext) {
 	vk::DescriptorPool poolToUse = get_pool(device);
 
 	vk::DescriptorSetAllocateInfo allocInfo = {};

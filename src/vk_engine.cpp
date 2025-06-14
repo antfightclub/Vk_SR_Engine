@@ -58,9 +58,12 @@ void VkSREngine::init()
 
 	init_sync_structures();
 
+	init_descriptors();
+
 	_isInitialized = true;
 }
 
+//> init_vulkan
 void VkSREngine::init_vulkan() 
 {
 	// Using vk-bootstrap to initialize vulkan instance
@@ -124,8 +127,9 @@ void VkSREngine::init_vulkan()
 	allocatorInfo.flags = vma::AllocatorCreateFlagBits::eBufferDeviceAddress;
 	VK_CHECK(vma::createAllocator(&allocatorInfo, &_allocator));
 }
+//< init_vulkan
 
-//> swapchain
+//> init_swapchain
 void VkSREngine::init_swapchain() {
 	create_swapchain(_windowExtent.width, _windowExtent.height);
 	//> drawimage
@@ -253,7 +257,7 @@ void VkSREngine::resize_swapchain() {
 
 	resize_requested = false;
 }
-//< swapchain
+//< init_swapchain
 
 //> init_commands
 void VkSREngine::init_commands() {
@@ -325,6 +329,65 @@ void VkSREngine::init_sync_structures() {
 }
 //< init_sync_structures
 
+//> init_descriptors
+void VkSREngine::init_descriptors() {
+	// Create a descriptor pool that will hold 10 sets with 1 image each
+	std::vector<DescriptorAllocator::PoolSizeRatio> sizes = {
+		{vk::DescriptorType::eStorageImage, 3},
+		{vk::DescriptorType::eUniformBuffer, 3},
+		{vk::DescriptorType::eCombinedImageSampler, 3},
+	};
+
+	globalDescriptorAllocator.init_pool(_device, 10, sizes);
+	_mainDeletionQueue.push_function([&]() {
+		_device.destroyDescriptorPool(globalDescriptorAllocator.pool, nullptr);
+		});
+
+	// Descriptor set layout for compute draw
+	{
+		DescriptorLayoutBuilder builder;
+		builder.add_binding(0, vk::DescriptorType::eStorageImage);
+		_drawImageDescriptorLayout = builder.build(_device, vk::ShaderStageFlagBits::eCompute);
+	}
+
+	// Descriptor set layout for gpu scene data 
+	{
+		DescriptorLayoutBuilder builder;
+		builder.add_binding(0, vk::DescriptorType::eUniformBuffer);
+		_gpuSceneDataDescriptorLayout = builder.build(_device, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
+	}
+
+	_mainDeletionQueue.push_function([&]() {
+		_device.destroyDescriptorSetLayout(_drawImageDescriptorLayout, nullptr);
+		_device.destroyDescriptorSetLayout(_gpuSceneDataDescriptorLayout, nullptr);
+		});
+
+	_drawImageDescriptors = globalDescriptorAllocator.allocate(_device, _drawImageDescriptorLayout);
+	// Write the descriptor set for the draw image
+	{
+		DescriptorWriter writer;
+		writer.write_image(0, _drawImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral, vk::DescriptorType::eStorageImage);
+		writer.update_set(_device, _drawImageDescriptors);
+	}
+
+	// Create (and put into deletion queue) the per-frame descriptors
+	for (int i = 0; i < FRAME_OVERLAP; i++) {
+		std::vector<DescriptorAllocatorGrowable::PoolSizeRatio> frame_sizes = {
+			{vk::DescriptorType::eStorageImage, 3},
+			{vk::DescriptorType::eStorageBuffer, 3},
+			{vk::DescriptorType::eUniformBuffer, 3},
+			{vk::DescriptorType::eCombinedImageSampler, 4},
+		};
+
+		_frames[i]._frameDescriptors = DescriptorAllocatorGrowable{};
+		_frames[i]._frameDescriptors.init(_device, 1000, frame_sizes);
+
+		_mainDeletionQueue.push_function([&, i]() {
+			_frames[i]._frameDescriptors.destroy_pools(_device);
+			});
+	}
+}
+//< init_descriptors
 
 //> cleanup
 void VkSREngine::cleanup() 

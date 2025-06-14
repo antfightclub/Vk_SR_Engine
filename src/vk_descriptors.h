@@ -8,7 +8,7 @@ struct DescriptorLayoutBuilder {
 
 	void add_binding(uint32_t binding, vk::DescriptorType type);
 	void clear();
-	vk::DescriptorSetLayout build(vk::Device device, vk::ShaderStageFlags shaderStages, void* pNext = nullptr, vk::DescriptorSetLayoutCreateFlags flags);
+	vk::DescriptorSetLayout build(vk::Device device, vk::ShaderStageFlags shaderStages, void* pNext = nullptr, vk::DescriptorSetLayoutCreateFlags flags = {});
 };
 //< DescriptorLayoutBuilder
 

@@ -92,6 +92,7 @@ public:
 	DescriptorAllocator globalDescriptorAllocator;
 	vk::DescriptorSet _drawImageDescriptors;
 	vk::DescriptorSetLayout _drawImageDescriptorLayout;
+	vk::DescriptorSetLayout _gpuSceneDataDescriptorLayout;
 
 	void init();
 
