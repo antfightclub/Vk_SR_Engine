@@ -96,6 +96,10 @@ public:
 	vk::DescriptorSetLayout _drawImageDescriptorLayout;
 	vk::DescriptorSetLayout _gpuSceneDataDescriptorLayout;
 
+	// Compute related
+	std::vector<ComputeEffect> _computeEffects;
+	int _currentBackgroundEffect{ 0 };
+
 	void init();
 
 	void run();
