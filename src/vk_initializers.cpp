@@ -1,7 +1,7 @@
 //vk_initializers.cpp
 #include "vk_initializers.h"
 
-//> init_cmds
+//> cmds
 vk::CommandPoolCreateInfo vkinit::command_pool_create_info(uint32_t queueFamilyIndex, vk::CommandPoolCreateFlags flags) {
 	vk::CommandPoolCreateInfo info = {};
 	info.queueFamilyIndex = queueFamilyIndex;
@@ -45,9 +45,9 @@ vk::SubmitInfo2 vkinit::submit_info(vk::CommandBufferSubmitInfo* cmd, vk::Semaph
 
 	return info;
 }
-//< init_cmds
+//< cmds
 
-//> init_images
+//> images
 vk::ImageCreateInfo vkinit::image_create_info(vk::Format format, vk::ImageUsageFlags usageFlags, vk::Extent3D extent) {
 	vk::ImageCreateInfo info = {};
 
@@ -85,9 +85,20 @@ vk::ImageViewCreateInfo vkinit::imageview_create_info(vk::Format format, vk::Ima
 
 	return info;
 }
-//< init_images
 
-//> init_sync_structures
+vk::ImageSubresourceRange vkinit::image_subresource_range(vk::ImageAspectFlags aspectMask) {
+	vk::ImageSubresourceRange subImage = {};
+	subImage.aspectMask = aspectMask;
+	subImage.baseMipLevel = 0;
+	subImage.levelCount = vk::RemainingMipLevels;
+	subImage.baseArrayLayer = 0;
+	subImage.layerCount = vk::RemainingArrayLayers;
+
+	return subImage;
+}
+//< images
+
+//> sync_structures
 vk::FenceCreateInfo vkinit::fence_create_info(vk::FenceCreateFlags flags) {
 	vk::FenceCreateInfo info = {};
 	info.flags = flags;
@@ -100,4 +111,4 @@ vk::SemaphoreCreateInfo vkinit::semaphore_create_info() {
 	
 	return info;
 }
-//< init_sync_structures
+//< sync_structures
