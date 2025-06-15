@@ -137,3 +137,31 @@ vk::PresentInfoKHR vkinit::present_info() {
 	return info;
 }
 //< present
+
+//> pipeline
+vk::PipelineLayoutCreateInfo vkinit::pipeline_layout_create_info() {
+	vk::PipelineLayoutCreateInfo info = {};
+
+	// Empty defaults
+	info.flags = {};
+	info.setLayoutCount = 0;
+	info.pSetLayouts = nullptr;
+	info.pushConstantRangeCount = 0;
+	info.pPushConstantRanges = nullptr;
+	return info;
+}
+
+vk::PipelineShaderStageCreateInfo vkinit::pipeline_shader_stage_create_info(vk::ShaderStageFlagBits stage, vk::ShaderModule shaderModule, const char* entry) {
+	vk::PipelineShaderStageCreateInfo info = {};
+
+	// Shader stage
+	info.stage = stage;
+
+	// Module containing the code for this shader stage
+	info.module = shaderModule;
+
+	// The entry point of the shader
+	info.pName = entry;
+	return info;
+}
+//< pipeline

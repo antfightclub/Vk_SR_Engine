@@ -28,4 +28,9 @@ namespace vkinit
 	//> submit_present
 	vk::PresentInfoKHR present_info();
 	//< submit_present
+
+	//> pipeline
+	vk::PipelineLayoutCreateInfo pipeline_layout_create_info();
+	vk::PipelineShaderStageCreateInfo pipeline_shader_stage_create_info(vk::ShaderStageFlagBits stage, vk::ShaderModule shaderModule, const char* entry = "main");
+	//< pipeline
 }
