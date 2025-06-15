@@ -16,6 +16,7 @@
 #include "vk_mem_alloc.h" // For some reason I *need* to have this here in this order, otherwise linker errors!
 #include "vk_mem_alloc.hpp"
 
+#include <vk_images.h>
 #include <vk_pipelines.h>
 
 #include <chrono>
@@ -505,7 +506,104 @@ void VkSREngine::cleanup()
 
 //> draw
 void VkSREngine::draw() {
-	// Nothing yet
+	// Wait until the GPU has finished rendering the last frame. Timout of 1 second
+	VK_CHECK(_device.waitForFences(1, &get_current_frame()._renderFence, true, 1000000000));
+
+	// Flush per frame data
+	get_current_frame()._deletionQueue.flush();
+	get_current_frame()._frameDescriptors.clear_pools(_device);
+
+	// Request an image from the swapchain
+	uint32_t swapchainImageIndex;
+
+	// Handle window resizing
+	vk::Result e = _device.acquireNextImageKHR(_swapchain, 1000000000, get_current_frame()._swapchainSemaphore, nullptr, &swapchainImageIndex);
+	if (e == vk::Result::eErrorOutOfDateKHR) {
+		resize_requested = true;
+		return;
+	}
+
+	// Update draw image extent
+	_drawExtent.height = std::min(_swapchainExtent.height, _drawImage.imageExtent.height) * renderScale;
+	_drawExtent.width = std::min(_swapchainExtent.width, _drawImage.imageExtent.width) * renderScale;
+	
+	// Reset frame renderfence
+	VK_CHECK(_device.resetFences(1, &get_current_frame()._renderFence));
+
+	// Reset frame command buffer
+	get_current_frame()._mainCommandBuffer.reset();
+
+	// Get the cmd handle for ease of use
+	vk::CommandBuffer cmd = get_current_frame()._mainCommandBuffer;
+
+	// Begin command buffer
+	vk::CommandBufferBeginInfo cmdBeginInfo = vkinit::command_buffer_begin_info(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+	VK_CHECK(cmd.begin(&cmdBeginInfo));
+
+
+	// Transition draw image and depth image into general layout so that we can write into it.
+	// It will all be overwritten so don't care about the older layout.
+	vkutil::transition_image(cmd, _drawImage.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eGeneral);
+	vkutil::transition_image(cmd, _depthImage.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eDepthAttachmentOptimal);
+
+	draw_main(cmd);
+
+	// Transition the draw image and swapchain image into their correct transfer layouts
+	vkutil::transition_image(cmd, _drawImage.image, vk::ImageLayout::eGeneral, vk::ImageLayout::eTransferSrcOptimal);
+	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+
+	VkExtent2D extent;
+	extent.height = _windowExtent.height;
+	extent.width = _windowExtent.width;
+
+	// Execute a copy from the draw image into the swapchain
+	vkutil::copy_image_to_image(cmd, _drawImage.image, _swapchainImages[swapchainImageIndex], _drawExtent, _swapchainExtent);
+
+	// Will need to set swapchain image layout to attachment optimal so that imgui can draw to it. 
+
+	// Set swapchain image layout to present so we can show it to the window
+	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::ePresentSrcKHR);
+
+	// Finalize the command buffer (can no longer add commands, but it can now be executed)
+	cmd.end();
+
+
+	// Prepare the submission to the queue.
+	// We want to wait on the _presentSemaphore as it is signaled when the swapchain is ready.
+	// We will signal the _readyForPresentSemaphores at the current swapchain index to signal that rendering has finished
+	vk::CommandBufferSubmitInfo cmdInfo = vkinit::command_buffer_submit_info(cmd);
+
+	vk::SemaphoreSubmitInfo waitInfo = vkinit::semaphore_submit_info(vk::PipelineStageFlagBits2::eColorAttachmentOutput, get_current_frame()._swapchainSemaphore);
+	vk::SemaphoreSubmitInfo signalInfo = vkinit::semaphore_submit_info(vk::PipelineStageFlagBits2::eAllGraphics, _readyForPresentSemaphores[swapchainImageIndex]);
+	
+	vk::SubmitInfo2 submit = vkinit::submit_info(&cmdInfo, &signalInfo, &waitInfo);
+
+	// Submit command buffer to the queue and execute it
+	// _renderFence will now block until the graphics commands finish execution
+	_graphicsQueue.submit2(1, &submit, get_current_frame()._renderFence);
+
+	// Prepare for presentation
+	// This will put the image we just rendered into the visible window
+	// we want to wait on the _readyForPresent semaphore for that, as it is
+	// necessary that drawing commands have finished before the image is displayed
+	vk::PresentInfoKHR presentInfo = vkinit::present_info();
+
+	presentInfo.pSwapchains = &_swapchain;
+	presentInfo.swapchainCount = 1;
+
+	presentInfo.pWaitSemaphores = &_readyForPresentSemaphores[swapchainImageIndex];
+	presentInfo.waitSemaphoreCount = 1;
+
+	presentInfo.pImageIndices = &swapchainImageIndex;
+
+	vk::Result presentResult = _graphicsQueue.presentKHR(&presentInfo);
+	if (presentResult == vk::Result::eErrorOutOfDateKHR) {
+		resize_requested = true;
+		return;
+	}
+
+	// Increase number of frames drawn
+	_frameNumber++;
 }
 
 void VkSREngine::draw_main(vk::CommandBuffer cmd) {
