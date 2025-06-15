@@ -62,6 +62,8 @@ void VkSREngine::init()
 	init_sync_structures();
 
 	init_descriptors();
+	
+	init_pipelines();
 
 	_isInitialized = true;
 }
