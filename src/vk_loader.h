@@ -8,3 +8,8 @@
 // Forward declaration of the engine
 class VulkanEngine;
 
+//> material
+struct GLTFMaterial {
+	MaterialInstance data;
+};
+//< material
