@@ -582,7 +582,7 @@ void VkSREngine::draw() {
 
 	// Submit command buffer to the queue and execute it
 	// _renderFence will now block until the graphics commands finish execution
-	_graphicsQueue.submit2(1, &submit, get_current_frame()._renderFence);
+	VK_CHECK(_graphicsQueue.submit2(1, &submit, get_current_frame()._renderFence));
 
 	// Prepare for presentation
 	// This will put the image we just rendered into the visible window
