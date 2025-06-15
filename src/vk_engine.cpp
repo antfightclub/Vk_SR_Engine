@@ -474,7 +474,6 @@ void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& f
 	VK_CHECK(_graphicsQueue.submit2(1, &submit, _immFence));
 
 	VK_CHECK(_device.waitForFences(1, &_immFence, true, 9999999999));
-
 }
 //< immediate_submit
 
@@ -504,8 +503,55 @@ void VkSREngine::cleanup()
 }
 //< cleanup
 
+//> draw
+void VkSREngine::draw() {
+	// Nothing yet
+}
+//<
+
 void VkSREngine::run() 
 {
-	// Nothing yet
+	SDL_Event e;
+	bool bQuit = false;
+
+	// Main loop
+	while (!bQuit) {
+
+		// Handle SDL events from poll queue
+		while (SDL_PollEvent(&e) != 0) {
+			// Close the window when user Alt-F4's or clicks the X button 
+			if (e.type == SDL_EVENT_QUIT) {
+				bQuit = true;
+			}
+
+			// Handle resizing
+			if (e.type == SDL_EVENT_WINDOW_RESIZED) {
+				resize_requested = true;
+			}
+
+			// Stop rendering when the window is minimized
+			if (e.type == SDL_EVENT_WINDOW_MINIMIZED) {
+				stop_rendering = true;
+			}
+			if (e.type == SDL_EVENT_WINDOW_RESTORED) {
+				stop_rendering = false;
+			}
+		}
+
+		// Do not draw if minimized
+		if (stop_rendering) {
+			// Throttle speed to avoid turbo-noops
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			continue;
+		}
+		
+		// Handle resizing
+		if (resize_requested) {
+			resize_swapchain();
+		}
+
+		// draw loop
+		draw();
+	}
 }
 
