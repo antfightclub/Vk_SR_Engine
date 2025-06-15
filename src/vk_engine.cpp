@@ -561,7 +561,8 @@ void VkSREngine::draw() {
 	// Execute a copy from the draw image into the swapchain
 	vkutil::copy_image_to_image(cmd, _drawImage.image, _swapchainImages[swapchainImageIndex], _drawExtent, _swapchainExtent);
 
-	// Will need to set swapchain image layout to attachment optimal so that imgui can draw to it. 
+	// Transition from transferdst to color attachment for future compatibility when using immediate submits with imgui
+	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eColorAttachmentOptimal);
 
 	// Set swapchain image layout to present so we can show it to the window
 	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::ePresentSrcKHR);
