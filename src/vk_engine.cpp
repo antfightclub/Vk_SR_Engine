@@ -459,11 +459,11 @@ void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& f
 	vk::CommandBuffer cmd = _immCommandBuffer;
 	vk::CommandBufferBeginInfo cmdBeginInfo = vkinit::command_buffer_begin_info(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
-	_immCommandBuffer.begin(&cmdBeginInfo);
+	cmd.begin(cmdBeginInfo);
 
 	function(cmd);
 
-	_immCommandBuffer.end(cmd);
+	cmd.end();
 
 	vk::CommandBufferSubmitInfo cmdSubmitInfo = vkinit::command_buffer_submit_info(cmd);
 
