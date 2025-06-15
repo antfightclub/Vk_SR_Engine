@@ -11,6 +11,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_descriptors.cpp
 	vk_pipelines.h
 	vk_pipelines.cpp
+	vk_images.h
+	vk_images.cpp
 	compute_structs.h
 	)
 
