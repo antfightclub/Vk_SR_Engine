@@ -36,3 +36,30 @@ struct MeshAsset {
 };
 //< mesh
 
+//> gltf
+struct LoadedGLTF : public IRenderable {
+	// Storage for all the data on a given gLTF file
+	std::unordered_map<std::string, std::shared_ptr<MeshAsset>> meshes;
+	std::unordered_map<std::string, std::shared_ptr<Node>> nodes;
+	std::unordered_map<std::string, AllocatedImage> images;
+	std::unordered_map<std::string, std::shared_ptr<GLTFMaterial>> materials;
+
+	// Nodes that do not have a parent, for iterating the file tree in order
+	std::vector<std::shared_ptr<Node>> topNodes;
+
+	std::vector<vk::Sampler> samplers;
+
+	DescriptorAllocatorGrowable descriptorPool;
+
+	AllocatedBuffer materialDataBuffer;
+
+	VulkanEngine* creator;
+
+	~LoadedGLTF() { clearAll(); };
+
+	virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx);
+
+private:
+	void clearAll();
+};
+
