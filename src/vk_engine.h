@@ -26,6 +26,14 @@ struct DeletionQueue
 	}
 };
 
+struct EngineStats {
+	float frametime;
+	int triangle_count;
+	int drawcall_count;
+	float scene_update_time;
+	float mesh_draw_time;
+};
+
 struct FrameData 
 {
 	vk::Semaphore _swapchainSemaphore, _renderSemaphore;
@@ -44,6 +52,8 @@ public:
 	int _frameNumber{ 0 };
 	bool stop_rendering{ false };
 	bool resize_requested{ false };
+
+	EngineStats _stats;
 
 	vk::Extent2D _windowExtent{ 1920, 1080 };
 	vk::Extent2D _largestExtent{ 2560, 1440 };
