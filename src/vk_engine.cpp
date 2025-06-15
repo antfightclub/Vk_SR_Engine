@@ -624,8 +624,13 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 	cmd.dispatch(std::ceil(_drawExtent.width / 16.0), std::ceil(_drawExtent.height / 16.0), 1);
 	//< Compute draws
 }
-
 //< draw
+
+//> update_scenes
+void VkSREngine::update_compute() {
+	
+}
+//<
 
 void VkSREngine::run() 
 {
