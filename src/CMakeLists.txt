@@ -13,6 +13,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_pipelines.cpp
 	vk_images.h
 	vk_images.cpp
+	vk_loader.h
+	vk_loader.cpp
 	compute_structs.h
 	camera.h
 	camera.cpp
