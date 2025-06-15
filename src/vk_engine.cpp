@@ -642,6 +642,9 @@ void VkSREngine::run()
 	// Main loop
 	while (!bQuit) {
 
+		// Begin clock
+		auto start = std::chrono::system_clock::now();
+
 		// Handle SDL events from poll queue
 		while (SDL_PollEvent(&e) != 0) {
 			// Close the window when user Alt-F4's or clicks the X button 
@@ -677,6 +680,13 @@ void VkSREngine::run()
 
 		// draw loop
 		draw();
+		
+		// Get end time
+		auto end = std::chrono::system_clock::now();
+
+		// Convert to microseconds (int) and then back to milliseconds
+		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+		_stats.frametime = elapsed.count() / 1000.f;
 	}
 }
 
