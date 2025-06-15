@@ -27,11 +27,12 @@ struct DeletionQueue
 };
 
 struct EngineStats {
-	float frametime;
-	int triangle_count;
-	int drawcall_count;
-	float scene_update_time;
-	float mesh_draw_time;
+	float frametime{ 0.f };
+	int triangle_count{ 0 };
+	int drawcall_count{ 0 };
+	float scene_update_time{ 0.f };
+	float mesh_draw_time{ 0.f };
+	float time_since_start{ 0.f };
 };
 
 struct FrameData 
@@ -121,6 +122,7 @@ public:
 	void draw();
 	void draw_main(vk::CommandBuffer cmd);
 
+	void update();
 	void update_compute();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);

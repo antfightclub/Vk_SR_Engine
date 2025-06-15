@@ -628,11 +628,16 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 }
 //< draw
 
-//> update_scenes
-void VkSREngine::update_compute() {
-	
+//> update
+void VkSREngine::update() {
+	update_compute();
 }
-//<
+
+void VkSREngine::update_compute() {
+	// Advance time in frosty shader
+	_computeEffects[0].data.data1.x = _stats.time_since_start;
+}
+//< update
 
 void VkSREngine::run() 
 {
@@ -678,6 +683,9 @@ void VkSREngine::run()
 			resize_swapchain();
 		}
 
+		// Update
+		update();
+
 		// draw loop
 		draw();
 		
@@ -687,6 +695,8 @@ void VkSREngine::run()
 		// Convert to microseconds (int) and then back to milliseconds
 		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 		_stats.frametime = elapsed.count() / 1000.f;
+		// Then back to seconds
+		_stats.time_since_start += _stats.frametime / 1000.f;
 	}
 }
 
