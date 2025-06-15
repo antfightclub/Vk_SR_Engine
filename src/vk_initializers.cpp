@@ -31,7 +31,7 @@ vk::CommandBufferSubmitInfo vkinit::command_buffer_submit_info(vk::CommandBuffer
 	return info;
 }
 
-vk::SubmitInfo2 submit_info(vk::CommandBufferSubmitInfo* cmd, vk::SemaphoreSubmitInfo* signalSemaphoreInfo, vk::SemaphoreSubmitInfo* waitSemaphoreInfo) {
+vk::SubmitInfo2 vkinit::submit_info(vk::CommandBufferSubmitInfo* cmd, vk::SemaphoreSubmitInfo* signalSemaphoreInfo, vk::SemaphoreSubmitInfo* waitSemaphoreInfo) {
 	vk::SubmitInfo2 info = {};
 
 	info.waitSemaphoreInfoCount = waitSemaphoreInfo == nullptr ? 0 : 1;
