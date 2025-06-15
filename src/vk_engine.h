@@ -98,7 +98,7 @@ public:
 
 	// Compute related
 	std::vector<ComputeEffect> _computeEffects;
-	int _currentBackgroundEffect{ 0 };
+	int _currentComputeEffect{ 0 };
 	vk::Pipeline _computePipeline;
 	vk::PipelineLayout _computePipelineLayout;
 
@@ -109,7 +109,7 @@ public:
 	void cleanup();
 
 	void draw();
-	void draw_main();
+	void draw_main(vk::CommandBuffer cmd);
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 

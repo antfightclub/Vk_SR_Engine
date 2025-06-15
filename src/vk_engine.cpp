@@ -508,8 +508,23 @@ void VkSREngine::draw() {
 	// Nothing yet
 }
 
-void VkSREngine::draw_main() {
+void VkSREngine::draw_main(vk::CommandBuffer cmd) {
+	//> Compute draws
+	// Get the currently chosen compute effect
+	ComputeEffect& effect = _computeEffects[_currentComputeEffect];
+	
+	// Bind the effect's pipeline
+	cmd.bindPipeline(vk::PipelineBindPoint::eCompute, effect.pipeline);
 
+	// Bind the descriptor set containing the draw image for the compute pipeline
+	cmd.bindDescriptorSets(vk::PipelineBindPoint::eCompute, _computePipelineLayout, 0, 1, &_drawImageDescriptors, 0, nullptr);
+
+	// Push constants
+	cmd.pushConstants(_computePipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(ComputePushConstants), &effect.data);
+
+	// Dispatch a compute command
+	cmd.dispatch(std::ceil(_drawExtent.width / 16.0), std::ceil(_drawExtent.height / 16.0), 1);
+	//< Compute draws
 }
 
 //< draw
