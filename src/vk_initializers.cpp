@@ -111,4 +111,29 @@ vk::SemaphoreCreateInfo vkinit::semaphore_create_info() {
 	
 	return info;
 }
+
+vk::SemaphoreSubmitInfo  vkinit::semaphore_submit_info(vk::PipelineStageFlagBits2 stageMask, vk::Semaphore semaphore) {
+	vk::SemaphoreSubmitInfo submitInfo = {};
+
+	submitInfo.semaphore = semaphore;
+	submitInfo.stageMask = stageMask;
+	submitInfo.deviceIndex = 0;
+	submitInfo.value = 1;
+
+	return submitInfo;
+}
 //< sync_structures
+
+//> present
+vk::PresentInfoKHR vkinit::present_info() {
+	vk::PresentInfoKHR info = {};
+
+	info.swapchainCount = 0;
+	info.pSwapchains = nullptr;
+	info.pWaitSemaphores = nullptr;
+	info.waitSemaphoreCount = 0;
+	info.pImageIndices = nullptr;
+
+	return info;
+}
+//< present

@@ -22,5 +22,10 @@ namespace vkinit
 	//> sync_structures
 	vk::FenceCreateInfo     fence_create_info(vk::FenceCreateFlags flags);
 	vk::SemaphoreCreateInfo semaphore_create_info(/*vk::SemaphoreCreateFlags flags*/);
+	vk::SemaphoreSubmitInfo  semaphore_submit_info(vk::PipelineStageFlagBits2 stageMask, vk::Semaphore semaphore);
 	//< sync_structures
+
+	//> submit_present
+	vk::PresentInfoKHR present_info();
+	//< submit_present
 }
