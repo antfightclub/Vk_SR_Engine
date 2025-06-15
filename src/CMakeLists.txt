@@ -14,6 +14,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 	vk_images.h
 	vk_images.cpp
 	compute_structs.h
+	camera.h
+	camera.cpp
 	)
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
