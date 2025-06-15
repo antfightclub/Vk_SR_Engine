@@ -111,6 +111,8 @@ public:
 	void draw();
 	void draw_main(vk::CommandBuffer cmd);
 
+	void update_compute();
+
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 
 private:
