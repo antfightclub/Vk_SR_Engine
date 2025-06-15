@@ -507,7 +507,12 @@ void VkSREngine::cleanup()
 void VkSREngine::draw() {
 	// Nothing yet
 }
-//<
+
+void VkSREngine::draw_main() {
+
+}
+
+//< draw
 
 void VkSREngine::run() 
 {

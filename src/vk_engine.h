@@ -109,6 +109,7 @@ public:
 	void cleanup();
 
 	void draw();
+	void draw_main();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 
