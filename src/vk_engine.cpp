@@ -538,6 +538,8 @@ void VkSREngine::cleanup()
 			frame._deletionQueue.flush();
 		}
 
+		_metalRoughMaterial.clear_resources(_device);
+
 		_mainDeletionQueue.flush();
 
 		destroy_swapchain();
