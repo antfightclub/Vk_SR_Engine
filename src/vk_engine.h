@@ -100,7 +100,10 @@ public:
 	AllocatedImage _depthImage;
 	vk::Extent2D _drawExtent;
 	float renderScale = 1.f;
-
+	
+	// Texture samplers
+	vk::Sampler _defaultSamplerLinear;
+	vk::Sampler _defaultSamplerNearest;
 
 	// Per frame structures
 	FrameData _frames[FRAME_OVERLAP];
@@ -122,6 +125,10 @@ public:
 	int _currentComputeEffect{ 0 };
 	vk::Pipeline _computePipeline;
 	vk::PipelineLayout _computePipelineLayout;
+
+	// Default data
+	AllocatedImage _errorCheckerboardImage;
+	AllocatedImage _blackImage;
 
 	void init();
 
@@ -154,6 +161,7 @@ private:
 	void init_descriptors();
 	void init_pipelines();
 	void init_compute_pipelines();
+	void init_default_data();
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();

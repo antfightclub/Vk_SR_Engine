@@ -22,6 +22,8 @@
 #include <chrono>
 #include <thread>
 
+#include <glm/gtx/transform.hpp>
+
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
 constexpr bool bUseValidationLayers = true;
@@ -453,6 +455,47 @@ void VkSREngine::init_compute_pipelines() {
 
 }
 //< init_pipelines
+
+//> init_default_data
+void VkSREngine::init_default_data() {
+
+	// Create a one-pixel texture which is black
+	uint32_t black = glm::packUnorm4x8(glm::vec4(0, 0, 0, 0));
+	_blackImage = create_image((void*)&black, vk::Extent3D{ 1, 1, 1 }, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled);
+
+	// Create a magenta and black checkerboard image to put in place of any failed texture loads
+	uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
+	std::array<uint32_t, 16 * 16> pixels; // 16x16 checkerboard texture
+	for (int x = 0; x < 16; x++) {
+		for (int y = 0; y < 16; y++) {
+			pixels[y * 16 + x] = ((x % 2) ^ (y % 2)) ? magenta : black;
+		}
+	}
+
+	_errorCheckerboardImage = create_image(pixels.data(), vk::Extent3D{ 16, 16, 1 }, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled);
+
+	// Initialize the two default samplers
+	vk::SamplerCreateInfo sampl = {};
+	sampl.magFilter = vk::Filter::eNearest;
+	sampl.minFilter = vk::Filter::eNearest;
+
+	VK_CHECK(_device.createSampler(&sampl, nullptr, &_defaultSamplerNearest));
+
+	sampl.magFilter = vk::Filter::eLinear;
+	sampl.minFilter = vk::Filter::eLinear;
+
+	VK_CHECK(_device.createSampler(&sampl, nullptr, &_defaultSamplerLinear));
+	
+	// Cleanup
+	_mainDeletionQueue.push_function([&]() {
+		_device.destroySampler(_defaultSamplerLinear);
+		_device.destroySampler(_defaultSamplerNearest);
+
+		destroy_image(_blackImage);
+		destroy_image(_errorCheckerboardImage);
+		});
+}
+//< init_default_data
 
 //> immediate_submit
 void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function) {
