@@ -22,6 +22,7 @@
 #include <chrono>
 #include <thread>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
 // Could use a preprocessor directive to define as true on debug build
