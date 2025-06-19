@@ -683,8 +683,48 @@ AllocatedImage VkSREngine::create_image(vk::Extent3D size, vk::Format format, vk
 	return newImage;
 }
 
-AllocatedImage VkSREngine::create_image(void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false) {
+AllocatedImage VkSREngine::create_image(void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped) {
+	// As we're using a void pointer, calculate the size of the data from the vk::Extent3D and the number of channels (4, rgba) 
+	size_t data_size = size.depth * size.width * size.height * 4;
+	
+	// Use a staging buffer for copying the image into gpu memory using immediate submit
+	AllocatedBuffer uploadBuffer = create_buffer(data_size, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuToGpu);
 
+	memcpy(uploadBuffer.info.pMappedData, data, data_size);
+
+	// Use the other overload of create_image
+	AllocatedImage new_image = create_image(size, format, usage | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eTransferSrc, mipmapped);
+	
+	// Use immediate_submit to submit the image to GPU memory
+	immediate_submit([&](vk::CommandBuffer cmd) {
+		vkutil::transition_image(cmd, new_image.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+
+		vk::BufferImageCopy copyRegion = {};
+		copyRegion.bufferOffset = 0;
+		copyRegion.bufferRowLength = 0;
+		copyRegion.bufferImageHeight = 0;
+
+		copyRegion.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+		copyRegion.imageSubresource.mipLevel = 0;
+		copyRegion.imageSubresource.baseArrayLayer = 0;
+		copyRegion.imageSubresource.layerCount = 1;
+		copyRegion.imageExtent = size;
+
+		// Copy buffer into the image
+		cmd.copyBufferToImage(uploadBuffer.buffer, new_image.image, vk::ImageLayout::eTransferDstOptimal, 1, &copyRegion);
+
+		if (mipmapped) {
+			// generate_mipmaps transitions the from eTransfferDstOptimal to eShaderReadOnlyOptimal
+			vkutil::generate_mipmaps(cmd, new_image.image, vk::Extent2D{ new_image.imageExtent.width, new_image.imageExtent.height });
+		}
+		else {
+			vkutil::transition_image(cmd, new_image.image, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+		}
+		});
+	
+	// Free the staging buffer
+	destroy_buffer(uploadBuffer);
+	return new_image;
 }
 
 void VkSREngine::destroy_buffer(const AllocatedBuffer& buffer) {
