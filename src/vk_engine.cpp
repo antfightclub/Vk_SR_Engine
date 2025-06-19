@@ -458,10 +458,12 @@ void VkSREngine::init_compute_pipelines() {
 
 //> init_default_data
 void VkSREngine::init_default_data() {
-
 	// Create a one-pixel texture which is black
 	uint32_t black = glm::packUnorm4x8(glm::vec4(0, 0, 0, 0));
 	_blackImage = create_image((void*)&black, vk::Extent3D{ 1, 1, 1 }, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled);
+
+	uint32_t white = glm::packUnorm4x8(glm::vec4(1, 1, 1, 1));
+	_whiteImage = create_image((void*)&white, vk::Extent3D{ 1,1,1 }, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled);
 
 	// Create a magenta and black checkerboard image to put in place of any failed texture loads
 	uint32_t magenta = glm::packUnorm4x8(glm::vec4(1, 0, 1, 1));
@@ -492,6 +494,7 @@ void VkSREngine::init_default_data() {
 		_device.destroySampler(_defaultSamplerNearest);
 
 		destroy_image(_blackImage);
+		destroy_image(_whiteImage);
 		destroy_image(_errorCheckerboardImage);
 		});
 }
