@@ -19,7 +19,19 @@ std::optional<AllocatedImage> load_image(VulkanEngine* engine, fastgltf::Asset& 
 }
 
 vk::Filter extract_filter(fastgltf::Filter filter) {
-	// Nothing yet
+	switch (filter) {
+		// Nearest samplers
+	case fastgltf::Filter::Nearest:
+	case fastgltf::Filter::NearestMipMapNearest:
+	case fastgltf::Filter::NearestMipMapLinear:
+		return vk::Filter::eNearest;
+		
+		// Linear samplers
+	case fastgltf::Filter::Linear:
+	case fastgltf::Filter::LinearMipMapNearest:
+	case fastgltf::Filter::LinearMipMapLinear:
+		return vk::Filter::eLinear;
+	}
 }
 
 vk::SamplerMipmapMode extract_mipmap_mode(fastgltf::Filter filter) {
