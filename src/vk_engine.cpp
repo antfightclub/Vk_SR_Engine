@@ -629,6 +629,29 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 }
 //< draw
 
+//> buffer/image/mesh allocation
+AllocatedBuffer VkSREngine::create_buffer(size_t allocSize, vk::BufferUsageFlags usage, vma::MemoryUsage memoryUsage) {
+
+}
+
+AllocatedImage VkSREngine::create_image(vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped) {
+
+}
+
+AllocatedImage VkSREngine::create_image(void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false) {
+
+}
+
+void VkSREngine::destroy_image(const AllocatedImage& img) {
+
+}
+
+GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Vertex> vertices) {
+
+}
+//< buffer/image/mesh allocation
+
+
 //> update
 void VkSREngine::update() {
 	update_compute();
