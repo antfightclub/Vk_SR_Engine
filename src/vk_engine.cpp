@@ -873,7 +873,11 @@ void GLTFMetallic_Roughness::build_pipelines(VkSREngine* engine) {
 }
 
 void GLTFMetallic_Roughness::clear_resources(vk::Device device) {
-
+	device.destroyDescriptorSetLayout(materialLayout, nullptr);
+	device.destroyPipelineLayout(transparentPipeline.layout, nullptr);
+	
+	device.destroyPipeline(transparentPipeline.pipeline, nullptr);
+	device.destroyPipeline(opaquePipeline.pipeline, nullptr);
 }
 
 MaterialInstance GLTFMetallic_Roughness::write_material(vk::Device device, MaterialPass pass, const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator) {
