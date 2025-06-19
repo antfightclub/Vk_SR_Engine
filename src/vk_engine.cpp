@@ -867,3 +867,21 @@ void VkSREngine::run()
 	}
 }
 
+// ############## GLTF materials ###############
+void GLTFMetallic_Roughness::build_pipelines(VkSREngine* engine) {
+
+}
+
+void GLTFMetallic_Roughness::clear_resources(vk::Device device) {
+
+}
+
+MaterialInstance GLTFMetallic_Roughness::write_material(vk::Device device, MaterialPass pass, const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator) {
+
+}
+
+
+// ############## MeshNode ###############
+void MeshNode::Draw(const glm::mat4& topMatrix, DrawContext& ctx) {
+	
+}
