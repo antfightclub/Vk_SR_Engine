@@ -132,6 +132,24 @@ void LoadedGLTF::Draw(const glm::mat4& topMatrix, DrawContext& ctx) {
 }
 
 void LoadedGLTF::clearAll() {
-	// Nothing yet
+	vk::Device dv = creator->_device;
+
+	descriptorPool.destroy_pools(dv);
+	creator->destroy_buffer(materialDataBuffer);
+	
+	for (auto& [k, v] : meshes) {
+		creator->destroy_buffer(v->meshBuffers.indexBuffer);
+		creator->destroy_buffer(v->meshBuffers.vertexBuffer);
+	}
+
+	for (auto& [k, v] : images) {
+		// TODO: when adding the default error checkerboard image, remember to skip destroying it since it's a member of creator!
+		fmt::println("TODO: After adding the default error checkerboard image, remember to skip destroying it since it's a member of creator!");
+		creator->destroy_image(v);
+	}
+
+	for (auto& sampler : samplers) {
+		dv.destroySampler(sampler, nullptr);
+	}
 }
 //< LoadedGLTF
