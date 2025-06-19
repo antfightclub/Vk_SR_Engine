@@ -1,3 +1,4 @@
+// Be careful! SDL packages its own version of stb_image... Make sure to include the right stb_image :)
 #include "stb_image.h"
 #include "vk_loader.h"
 #include <iostream>
@@ -14,8 +15,7 @@
 #include <fastgltf/util.hpp>
 
 //> global_funcs
-std::optional<AllocatedImage> load_image(VulkanEngine* engine, fastgltf::Asset& asset, fastgltf::Image& image) {
-	// Nothing yet
+std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& asset, fastgltf::Image& image) {
 }
 
 vk::Filter extract_filter(fastgltf::Filter filter) {
@@ -52,7 +52,7 @@ vk::SamplerMipmapMode extract_mipmap_mode(fastgltf::Filter filter) {
 //< global_funcs
 
 //> loadgltf_func
-std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VulkanEngine* engine, std::string_view filePath) {
+std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VkSREngine* engine, std::string_view filePath) {
 
 }
 //< loadgltf_func
