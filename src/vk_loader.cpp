@@ -35,8 +35,19 @@ vk::Filter extract_filter(fastgltf::Filter filter) {
 }
 
 vk::SamplerMipmapMode extract_mipmap_mode(fastgltf::Filter filter) {
-	// Nothing yet
-}
+	switch (filter) {
+		// Nearest mipmap sampler mode
+	case fastgltf::Filter::NearestMipMapNearest:
+	case fastgltf::Filter::LinearMipMapNearest:
+		return vk::SamplerMipmapMode::eNearest;
+
+		// Linear mipmap sampler mode (default if mipmap filter mode doesn't match)
+	case fastgltf::Filter::NearestMipMapLinear:
+	case fastgltf::Filter::LinearMipMapLinear:
+	default:
+		return vk::SamplerMipmapMode::eLinear;
+	}
+} 
 //< global_funcs
 
 //> loadgltf_func
