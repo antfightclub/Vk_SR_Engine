@@ -658,7 +658,7 @@ AllocatedImage VkSREngine::create_image(void* data, vk::Extent3D size, vk::Forma
 }
 
 void VkSREngine::destroy_buffer(const AllocatedBuffer& buffer) {
-
+	_allocator.destroyBuffer(buffer.buffer, buffer.allocation);
 }
 
 void VkSREngine::destroy_image(const AllocatedImage& img) {
