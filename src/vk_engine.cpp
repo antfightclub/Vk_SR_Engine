@@ -732,7 +732,8 @@ void VkSREngine::destroy_buffer(const AllocatedBuffer& buffer) {
 }
 
 void VkSREngine::destroy_image(const AllocatedImage& img) {
-
+	_device.destroyImageView(img.imageView, nullptr);
+	_allocator.destroyImage(img.image, img.allocation);
 }
 
 GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Vertex> vertices) {
