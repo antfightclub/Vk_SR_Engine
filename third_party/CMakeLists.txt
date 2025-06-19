@@ -27,3 +27,6 @@ add_subdirectory(glm)
 add_library(stb_image INTERFACE)
 
 target_include_directories(stb_image INTERFACE stb) 
+
+# fastgltf
+add_subdirectory(fastgltf)

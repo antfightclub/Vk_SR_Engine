@@ -35,6 +35,7 @@ target_link_libraries (${PROJECT_NAME} PUBLIC
 	vkbootstrap
 	glm::glm
 	stb_image
+	fastgltf::fastgltf
 	)
 
 target_precompile_headers (${PROJECT_NAME} PUBLIC
