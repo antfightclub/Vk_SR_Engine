@@ -869,6 +869,72 @@ void VkSREngine::run()
 
 // ############## GLTF materials ###############
 void GLTFMetallic_Roughness::build_pipelines(VkSREngine* engine) {
+	// Fixed function pipeline vertex shader and fragment shader
+	vk::ShaderModule meshVertexShader;
+	if (!vkutil::load_shader_module("../../shaders/mesh.vert.spv", engine->_device, &meshVertexShader)) {
+		fmt::println("Error when building the vertex shader module!");
+	}
+
+	vk::ShaderModule meshFragmentShader;
+	if (!vkutil::load_shader_module("../../shaders/mesh.frag.spv", engine->_device, &meshFragmentShader)) {
+		fmt::println("Error when building the fragment shader module!");
+	}
+
+	vk::PushConstantRange matrixRange{};
+	matrixRange.offset = 0;
+	matrixRange.size = sizeof(GPUDrawPushConstants);
+	matrixRange.stageFlags = vk::ShaderStageFlagBits::eVertex;
+
+	DescriptorLayoutBuilder layoutBuilder;
+	layoutBuilder.add_binding(0, vk::DescriptorType::eUniformBuffer);
+	layoutBuilder.add_binding(1, vk::DescriptorType::eCombinedImageSampler);
+	layoutBuilder.add_binding(2, vk::DescriptorType::eCombinedImageSampler);
+
+	materialLayout = layoutBuilder.build(engine->_device, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment);
+
+	vk::DescriptorSetLayout layouts[] = { engine->_gpuSceneDataDescriptorLayout, materialLayout };
+	
+	vk::PipelineLayoutCreateInfo meshLayoutInfo = vkinit::pipeline_layout_create_info();
+	meshLayoutInfo.setLayoutCount = 2;
+	meshLayoutInfo.pSetLayouts = layouts;
+	meshLayoutInfo.pPushConstantRanges = &matrixRange;
+	meshLayoutInfo.pushConstantRangeCount = 1;
+
+	vk::PipelineLayout newLayout;
+	VK_CHECK(engine->_device.createPipelineLayout(&meshLayoutInfo, nullptr, &newLayout));
+
+	opaquePipeline.layout = newLayout;
+	transparentPipeline.layout = newLayout;
+
+	// Build the stage create info for both vertex and fragment stages, which tells the pipeline which shader modules to uge per stage
+	PipelineBuilder pipelineBuilder;
+	pipelineBuilder.set_shaders(meshVertexShader, meshFragmentShader);
+	pipelineBuilder.set_input_topology(vk::PrimitiveTopology::eTriangleList);
+	pipelineBuilder.set_polygon_mode(vk::PolygonMode::eFill);
+	pipelineBuilder.set_cull_mode(vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise);
+	pipelineBuilder.set_multisampling_none();
+	pipelineBuilder.disable_blending();
+	pipelineBuilder.enable_depthtest(true, vk::CompareOp::eGreaterOrEqual);
+
+	// Render format
+	pipelineBuilder.set_color_attachment_format(engine->_drawImage.imageFormat);
+	pipelineBuilder.set_depth_format(engine->_depthImage.imageFormat);
+
+	// Use the triangle layout
+	pipelineBuilder._pipelineLayout = newLayout;
+
+	// Build the popeline
+	opaquePipeline.pipeline = pipelineBuilder.build_pipeline(engine->_device);
+
+	// Create the transparent variant for transparent surfaces
+	pipelineBuilder.enable_blending_additive();
+	
+	pipelineBuilder.enable_depthtest(false, vk::CompareOp::eGreaterOrEqual);
+
+	transparentPipeline.pipeline = pipelineBuilder.build_pipeline(engine->_device);
+
+	engine->_device.destroyShaderModule(meshFragmentShader, nullptr);
+	engine->_device.destroyShaderModule(meshVertexShader, nullptr);
 
 }
 
