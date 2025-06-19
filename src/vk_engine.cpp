@@ -534,6 +534,10 @@ void VkSREngine::cleanup()
 		// Ensure that GPU has stopped all work
 		_device.waitIdle();
 
+		for (auto& frame : _frames) {
+			frame._deletionQueue.flush();
+		}
+
 		_mainDeletionQueue.flush();
 
 		destroy_swapchain();
