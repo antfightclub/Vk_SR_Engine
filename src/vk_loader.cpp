@@ -1,3 +1,4 @@
+#include "stb_image.h"
 #include "vk_loader.h"
 #include <iostream>
 

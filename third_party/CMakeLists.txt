@@ -23,3 +23,7 @@ target_link_libraries(sdl INTERFACE SDL3::SDL3)
 
 add_subdirectory(glm)
 
+# STB (for stb_image)
+add_library(stb_image INTERFACE)
+
+target_include_directories(stb_image INTERFACE stb) 
