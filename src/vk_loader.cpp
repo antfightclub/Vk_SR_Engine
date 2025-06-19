@@ -59,7 +59,10 @@ std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VulkanEngine* engine, std::s
 
 //> LoadedGLTF
 void LoadedGLTF::Draw(const glm::mat4& topMatrix, DrawContext& ctx) {
-	// Nothing yet
+	// Create renderables from the scene nodes
+	for (auto& n : topNodes) {
+		n->Draw(topMatrix, ctx);
+	}
 }
 
 void LoadedGLTF::clearAll() {
