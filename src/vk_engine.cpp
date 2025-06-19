@@ -631,7 +631,22 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 
 //> buffer/image/mesh allocation
 AllocatedBuffer VkSREngine::create_buffer(size_t allocSize, vk::BufferUsageFlags usage, vma::MemoryUsage memoryUsage) {
+	// Vulkan create info
+	vk::BufferCreateInfo bufferInfo = {};
+	bufferInfo.size = allocSize;
+	bufferInfo.usage = usage;
 
+	// vma create info
+	vma::AllocationCreateInfo vmaallocInfo = {};
+	vmaallocInfo.usage = memoryUsage;
+	vmaallocInfo.flags = vma::AllocationCreateFlagBits::eMapped;
+	
+	AllocatedBuffer newBuffer;
+
+	// Allocate the buffer
+	VK_CHECK(_allocator.createBuffer(&bufferInfo, &vmaallocInfo, &newBuffer.buffer, &newBuffer.allocation, &newBuffer.info));
+
+	return newBuffer;
 }
 
 AllocatedImage VkSREngine::create_image(vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped) {
