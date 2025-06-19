@@ -650,7 +650,37 @@ AllocatedBuffer VkSREngine::create_buffer(size_t allocSize, vk::BufferUsageFlags
 }
 
 AllocatedImage VkSREngine::create_image(vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped) {
+	AllocatedImage newImage;
+	newImage.imageFormat = format;
+	newImage.imageExtent = size;
 
+	vk::ImageCreateInfo img_info = vkinit::image_create_info(format, usage, size);
+	if (mipmapped) {
+		img_info.mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(size.width, size.height)))) + 1;
+	}
+
+	// Always allocate images on dedicated GPU memory
+	vma::AllocationCreateInfo allocInfo = {};
+	allocInfo.usage = vma::MemoryUsage::eGpuOnly;
+	allocInfo.requiredFlags = vk::MemoryPropertyFlagBits::eDeviceLocal;
+
+	// Allocate and create the image
+	VK_CHECK(_allocator.createImage(&img_info, &allocInfo, &newImage.image, &newImage.allocation, nullptr));
+
+	// If the format is a depth format, use the correct aspect flag
+	vk::ImageAspectFlags aspectFlag = vk::ImageAspectFlagBits::eColor;
+	if (format == vk::Format::eD32Sfloat) {
+		aspectFlag = vk::ImageAspectFlagBits::eDepth;
+	}
+
+	// Build an image view for the image
+	vk::ImageViewCreateInfo view_info = vkinit::imageview_create_info(format, newImage.image, aspectFlag);
+	view_info.subresourceRange.levelCount = img_info.mipLevels;
+
+	// Create the image view
+	VK_CHECK(_device.createImageView(&view_info, nullptr, &newImage.imageView));
+
+	return newImage;
 }
 
 AllocatedImage VkSREngine::create_image(void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false) {
