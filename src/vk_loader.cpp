@@ -16,6 +16,72 @@
 
 //> global_funcs
 std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& asset, fastgltf::Image& image) {
+	AllocatedImage newImage = {};
+
+	int width, height, nrChannels;
+	std::visit(
+		fastgltf::visitor{
+			[](auto& arg) {},
+			[&](fastgltf::sources::URI& filePath) {
+			assert(filePath.fileByteOffset == 0); // Do not support byte offsets with stb_image
+			assert(filePath.uri.isLocalPath());   // Only handle loading local files 
+			const std::string path(filePath.uri.path().begin(), filePath.uri.path().end()); // Thanks c++
+			unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 4);
+			if (data) {
+				vk::Extent3D imagesize;
+				imagesize.width = width;
+				imagesize.height = height;
+				imagesize.depth = 1;
+
+				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true); // I have not yet implemented create_image
+
+				stbi_image_free(data);
+			}
+		},
+		[&](fastgltf::sources::Vector& vector) {
+			unsigned char* data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(vector.bytes.data()), static_cast<int>(vector.bytes.size()), &width, &height, &nrChannels, 4);
+			if (data) {
+				vk::Extent3D imagesize;
+				imagesize.width = width;
+				imagesize.height = height;
+				imagesize.depth = 1;
+
+				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+
+				stbi_image_free(data);
+			}
+		},
+		[&](fastgltf::sources::BufferView& view) {
+			auto& bufferView = asset.bufferViews[view.bufferViewIndex];
+			auto& buffer = asset.buffers[bufferView.bufferIndex];
+			std::visit(fastgltf::visitor { // Only care about VectorWithMime here since LoadExternalBuffers has been specified meaning all buffers are already loaded into a vector
+				[](auto& arg) {},
+				[&](fastgltf::sources::Vector& vector) {
+					unsigned char* data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(vector.bytes.data()) + bufferView.byteOffset, static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
+					if (data) {
+						vk::Extent3D imagesize;
+						imagesize.width = width;
+						imagesize.height = height;
+						imagesize.depth = 1;
+
+						newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+
+						stbi_image_free(data);
+					}
+				}
+			}, buffer.data);
+		},
+		 
+		},
+		image.data);
+
+	// If any o the attempts to load the data failed, we haven't written the image so the return handle is null
+	if (newImage.image == VK_NULL_HANDLE) {
+		return {};
+	}
+	else {
+		return newImage;
+	}
 }
 
 vk::Filter extract_filter(fastgltf::Filter filter) {
