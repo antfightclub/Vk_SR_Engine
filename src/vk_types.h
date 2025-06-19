@@ -81,7 +81,7 @@ enum class MaterialPass : uint8_t {
 
 struct MaterialPipeline {
 	vk::Pipeline pipeline;
-	vk::Pipeline layout;
+	vk::PipelineLayout layout;
 };
 
 struct MaterialInstance {
