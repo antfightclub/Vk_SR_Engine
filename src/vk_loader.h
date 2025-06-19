@@ -6,7 +6,7 @@
 #include <filesystem>
 
 // Forward declaration of the engine
-class VulkanEngine;
+class VkSREngine;
 
 //> material
 struct GLTFMaterial {
@@ -53,7 +53,7 @@ struct LoadedGLTF : public IRenderable {
 
 	AllocatedBuffer materialDataBuffer;
 
-	VulkanEngine* creator;
+	VkSREngine* creator;
 
 	~LoadedGLTF() { clearAll(); };
 
@@ -63,6 +63,6 @@ private:
 	void clearAll();
 };
 
-std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VulkanEngine* engine, std::string_view filePath);
+std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VkSREngine* engine, std::string_view filePath);
 //< gltf
 
