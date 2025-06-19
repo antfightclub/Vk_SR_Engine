@@ -877,7 +877,25 @@ void GLTFMetallic_Roughness::clear_resources(vk::Device device) {
 }
 
 MaterialInstance GLTFMetallic_Roughness::write_material(vk::Device device, MaterialPass pass, const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator) {
+	MaterialInstance matData;
+	matData.passType = pass;
+	if (pass == MaterialPass::Transparent) {
+		matData.pipeline = &transparentPipeline;
+	}
+	else {
+		matData.pipeline = &opaquePipeline;
+	}
 
+	matData.materialSet = descriptorAllocator.allocate(device, materialLayout);
+
+	writer.clear();
+	writer.write_buffer(0, resources.dataBuffer, sizeof(MaterialConstants), resources.dataBufferOffset, vk::DescriptorType::eUniformBuffer);
+	writer.write_image(1, resources.colorImage.imageView, resources.colorSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
+	writer.write_image(2, resources.metalRoughImage.imageView, resources.metalRoughSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::DescriptorType::eCombinedImageSampler);
+
+	writer.update_set(device, matData.materialSet);
+
+	return matData;
 }
 
 
