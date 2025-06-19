@@ -57,6 +57,58 @@ struct GPUSceneData {
 	glm::vec4 sunlightColor;
 };
 
+struct GLTFMetallic_Roughness {
+	MaterialPipeline opaquePipeline;
+	MaterialPipeline transparentPipeline;
+
+	vk::DescriptorSetLayout materialLayout;
+
+	struct MaterialConstants {
+		glm::vec4 colorFactors;
+		glm::vec4 metal_rough_factors;
+		// Paddig, need the extra space for uniform buffers
+		glm::vec4 extra[14];
+	};
+
+	struct MaterialResources {
+		AllocatedImage colorImage;
+		vk::Sampler colorSampler;
+		AllocatedImage metalRoughImage;
+		vk::Sampler metalRoughSampler;
+		vk::Buffer dataBuffer;
+		uint32_t dataBufferOffset;
+	};
+
+	DescriptorWriter writer;
+
+	void build_pipelines(VkSREngine* engine);
+	void clear_resources(vk::Device device);
+
+	MaterialInstance write_material(vk::Device device, MaterialPass pass, const MaterialResources& resources, DescriptorAllocatorGrowable& descriptorAllocator);
+};
+
+struct RenderObject {
+	uint32_t indexCount;
+	uint32_t firstIndex;
+	vk::Buffer indexBuffer;
+
+	MaterialInstance* material;
+	Bounds bounds;
+	glm::mat4 transform;
+	vk::DeviceAddress vertexBufferAddress;
+};
+
+struct DrawContext {
+	std::vector<RenderObject> OpaqueSurfaces;
+	std::vector<RenderObject> TransparentSurfaces;
+}; 
+
+struct MeshNode : public Node {
+	std::shared_ptr<MeshAsset> mesh;
+
+	virtual void Draw(const glm::mat4& topMatrix, DrawContext& ctx) override;
+};
+
 class VkSREngine {
 public:
 	bool _isInitialized{ false };
@@ -126,9 +178,14 @@ public:
 	vk::Pipeline _computePipeline;
 	vk::PipelineLayout _computePipelineLayout;
 
-	// Default data
+	// Default images
 	AllocatedImage _errorCheckerboardImage;
 	AllocatedImage _blackImage;
+	AllocatedImage _whiteImage;
+
+	// Default material data
+	MaterialInstance _defaultData;
+	GLTFMetallic_Roughness _metalRoughMaterial;
 
 	void init();
 
