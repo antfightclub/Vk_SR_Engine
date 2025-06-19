@@ -790,7 +790,54 @@ void VkSREngine::destroy_image(const AllocatedImage& img) {
 }
 
 GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Vertex> vertices) {
+	const size_t vertexBufferSize = vertices.size() * sizeof(Vertex);
+	const size_t indexBufferSize = indices.size() * sizeof(uint32_t);
 
+	GPUMeshBuffers newSurface;
+
+	// Create vertex buffer
+	newSurface.vertexBuffer = create_buffer(vertexBufferSize, vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eShaderDeviceAddress, vma::MemoryUsage::eGpuOnly);
+
+	// Find the adress of the vertex buffer
+	vk::BufferDeviceAddressInfo deviceAddressInfo = {};
+	deviceAddressInfo.buffer = newSurface.vertexBuffer.buffer;
+	
+	newSurface.vertexBufferAddress = _device.getBufferAddress(&deviceAddressInfo);
+
+	// Create index buffer
+	newSurface.indexBuffer = create_buffer(indexBufferSize, vk::BufferUsageFlagBits::eIndexBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eGpuOnly);
+
+	// Use a CPU-local staging buffer which will get copied into GPU memory
+	AllocatedBuffer staging = create_buffer(vertexBufferSize + indexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly);
+
+	void* data = staging.allocation;
+
+	// Copy vertex buffer
+	memcpy(data, vertices.data(), vertexBufferSize);
+	// Copy index buffer
+	memcpy((char*)data + vertexBufferSize, indices.data(), indexBufferSize);
+
+	// Use immediatesubmit to copy buffers to GPU
+	immediate_submit([&](vk::CommandBuffer cmd) {
+		vk::BufferCopy vertexCopy{ 0 };
+		vertexCopy.dstOffset = 0;
+		vertexCopy.srcOffset = 0;
+		vertexCopy.size = vertexBufferSize;
+
+		cmd.copyBuffer(staging.buffer, newSurface.vertexBuffer.buffer, 1, &vertexCopy);
+
+		vk::BufferCopy indexCopy{ 0 };
+		indexCopy.dstOffset = 0;
+		indexCopy.srcOffset = vertexBufferSize;
+		indexCopy.size = indexBufferSize;
+
+		cmd.copyBuffer(staging.buffer, newSurface.indexBuffer.buffer, 1, &indexCopy);
+
+		});
+
+	destroy_buffer(staging);
+
+	return newSurface;
 }
 //< buffer/image/mesh allocation
 
