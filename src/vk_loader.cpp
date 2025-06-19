@@ -20,16 +20,17 @@ std::optional<AllocatedImage> load_image(VulkanEngine* engine, fastgltf::Asset& 
 
 vk::Filter extract_filter(fastgltf::Filter filter) {
 	switch (filter) {
-		// Nearest samplers
+		// Nearest sampler
 	case fastgltf::Filter::Nearest:
 	case fastgltf::Filter::NearestMipMapNearest:
 	case fastgltf::Filter::NearestMipMapLinear:
 		return vk::Filter::eNearest;
 		
-		// Linear samplers
+		// Linear sampler (default if filter type doesn't match)
 	case fastgltf::Filter::Linear:
 	case fastgltf::Filter::LinearMipMapNearest:
 	case fastgltf::Filter::LinearMipMapLinear:
+	default:
 		return vk::Filter::eLinear;
 	}
 }
