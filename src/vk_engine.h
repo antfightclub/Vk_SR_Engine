@@ -3,6 +3,7 @@
 
 #include <vk_types.h>
 #include <vk_descriptors.h>
+#include <vk_loader.h>
 
 #include "compute_structs.h"
 
@@ -135,6 +136,14 @@ public:
 	void update_compute();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
+
+	AllocatedBuffer create_buffer(size_t allocSize, vk::BufferUsageFlags usage, vma::MemoryUsage memoryUsage);
+	AllocatedImage create_image(vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false);
+	AllocatedImage create_image(void* data, vk::Extent3D size, vk::Format format, vk::ImageUsageFlags usage, bool mipmapped = false);
+	void destroy_image(const AllocatedImage& img);
+
+	GPUMeshBuffers upload_mesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
+
 
 private:
 	void init_vulkan();
