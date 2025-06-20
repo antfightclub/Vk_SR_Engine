@@ -400,6 +400,8 @@ void VkSREngine::init_descriptors() {
 //> init_pipelines
 void VkSREngine::init_pipelines() {
 	init_compute_pipelines();
+
+	_metalRoughMaterial.build_pipelines(this);
 }
 
 void VkSREngine::init_compute_pipelines() {
