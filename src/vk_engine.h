@@ -4,6 +4,7 @@
 #include <vk_types.h>
 #include <vk_descriptors.h>
 #include <vk_loader.h>
+#include <camera.h>
 
 #include "compute_structs.h"
 
@@ -186,6 +187,9 @@ public:
 	// Default material data
 	MaterialInstance _defaultData;
 	GLTFMetallic_Roughness _metalRoughMaterial;
+
+	// Camera
+	Camera _mainCamera;
 
 	void init();
 
