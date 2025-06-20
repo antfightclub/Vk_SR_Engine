@@ -67,6 +67,8 @@ void VkSREngine::init()
 	init_descriptors();
 	
 	init_pipelines();
+	
+	init_default_data();
 
 	_isInitialized = true;
 }
