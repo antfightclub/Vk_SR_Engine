@@ -130,18 +130,28 @@ std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VkSREngine* engine, std::str
 	fastgltf::Parser parser{};
 	constexpr auto gltfOptions = fastgltf::Options::DontRequireValidAssetMember | fastgltf::Options::AllowDouble | fastgltf::Options::LoadGLBBuffers | fastgltf::Options::LoadExternalBuffers | fastgltf::Options::LoadExternalImages;
 
-	// GltfFileStream has a buffer for storing the input filestream
-	fastgltf::GltfFileStream fileStream = fastgltf::GltfFileStream(filePath);
-
 	// Prepare a handle for later use
 	fastgltf::Asset gltf;
 	
 	std::filesystem::path path = filePath;
 
-	// Figure out which glTF type to load; glTF or a binary GLB
-	auto type = fastgltf::determineGltfFileType(fileStream);
+	auto gltfFile = fastgltf::GltfDataBuffer::FromPath(path);
 
-	if (type == fastgltf::GltfType::glTF) {
+	if (!bool(gltfFile)) {
+		std::cerr << "Failed to open glTF file: " << fastgltf::getErrorMessage(gltfFile.error()) << std::endl;
+		return {};
+	}
+
+	auto asset = parser.loadGltf(gltfFile.get(), path.parent_path(), gltfOptions);
+	if (asset.error() != fastgltf::Error::None) {
+		std::cerr << "Failed to load glTF: " << fastgltf::getErrorMessage(asset.error()) << std::endl;
+		return {};
+	}
+	
+	gltf = std::move(asset.get());
+	
+
+	/*if (type == fastgltf::GltfType::glTF) {
 		auto load = parser.loadGltf(fileStream, path.parent_path(), gltfOptions);
 		if (load) {
 			gltf = std::move(load.get());
@@ -164,7 +174,7 @@ std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VkSREngine* engine, std::str
 	else {
 		std::cerr << "Failed to determine glTF container." << std::endl;
 		return {};
-	}
+	}*/
 
 	// Time to load the gltf into the structures of LoadedGLTF.
 	// Prepare descriptors
