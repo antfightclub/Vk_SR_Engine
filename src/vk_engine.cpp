@@ -1044,6 +1044,8 @@ GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Ve
 //> update
 void VkSREngine::update() {
 	update_compute();
+
+	update_scene();
 }
 
 void VkSREngine::update_compute() {
