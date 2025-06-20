@@ -33,4 +33,13 @@ namespace vkinit
 	vk::PipelineLayoutCreateInfo pipeline_layout_create_info();
 	vk::PipelineShaderStageCreateInfo pipeline_shader_stage_create_info(vk::ShaderStageFlagBits stage, vk::ShaderModule shaderModule, const char* entry = "main");
 	//< pipeline
+
+	//> attachments
+	vk::RenderingAttachmentInfo attachment_info(vk::ImageView view, vk::ClearValue* clear, vk::ImageLayout layout);
+	vk::RenderingAttachmentInfo depth_attachment_info(vk::ImageView view, vk::ImageLayout layout);
+	//< attachments
+
+	//> rendering
+	vk::RenderingInfo rendering_info(vk::Extent2D renderExtent, vk::RenderingAttachmentInfo* colorAttachment, vk::RenderingAttachmentInfo* depthAttachment);
+	//< rendering
 }

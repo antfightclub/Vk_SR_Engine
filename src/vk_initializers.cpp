@@ -165,3 +165,41 @@ vk::PipelineShaderStageCreateInfo vkinit::pipeline_shader_stage_create_info(vk::
 	return info;
 }
 //< pipeline
+
+//> attachments
+vk::RenderingAttachmentInfo vkinit::attachment_info(vk::ImageView view, vk::ClearValue* clear, vk::ImageLayout layout) {
+	vk::RenderingAttachmentInfo colorAttachment = {};
+	colorAttachment.imageView = view;
+	colorAttachment.imageLayout = layout;
+	colorAttachment.loadOp = clear ? vk::AttachmentLoadOp::eClear : vk::AttachmentLoadOp::eLoad;
+	colorAttachment.storeOp = vk::AttachmentStoreOp::eStore;
+	if (clear) {
+		colorAttachment.clearValue = *clear;
+	}
+	return colorAttachment;
+}
+
+vk::RenderingAttachmentInfo vkinit::depth_attachment_info(vk::ImageView view, vk::ImageLayout layout) {
+	vk::RenderingAttachmentInfo depthAttachment = {};
+	depthAttachment.imageView = view;
+	depthAttachment.imageLayout = layout;
+	depthAttachment.loadOp = vk::AttachmentLoadOp::eClear;
+	depthAttachment.storeOp = vk::AttachmentStoreOp::eStore;
+	depthAttachment.clearValue.depthStencil.depth = 0.f;
+	return depthAttachment;
+}
+//< attachments
+
+//> render_info
+vk::RenderingInfo vkinit::rendering_info(vk::Extent2D renderExtent, vk::RenderingAttachmentInfo* colorAttachment, vk::RenderingAttachmentInfo* depthAttachment) {
+	vk::RenderingInfo renderInfo = {};
+
+	renderInfo.renderArea = vk::Rect2D{ vk::Offset2D{0, 0 }, renderExtent };
+	renderInfo.layerCount = 1;
+	renderInfo.colorAttachmentCount = 1;
+	renderInfo.pColorAttachments = colorAttachment;
+	renderInfo.pDepthAttachment = depthAttachment;
+	renderInfo.pStencilAttachment = nullptr;
+	return renderInfo;
+}
+//< render_info
