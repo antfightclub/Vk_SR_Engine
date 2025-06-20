@@ -883,6 +883,9 @@ void VkSREngine::run()
 			if (e.type == SDL_EVENT_WINDOW_RESTORED) {
 				stop_rendering = false;
 			}
+
+			// Camera movement
+			_mainCamera.processSDLEvent(e);
 		}
 
 		// Do not draw if minimized
