@@ -758,6 +758,126 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 	//< geometry draws
 }
 
+void VkSREngine::draw_geometry(vk::CommandBuffer cmd) {
+	std::vector<uint32_t> opaque_draws;
+
+	opaque_draws.reserve(_mainDrawContext.OpaqueSurfaces.size());
+
+	// Perform culling, that is decide which surfaces should be drawn depending on if they are in view
+	for (uint32_t i = 0; i < _mainDrawContext.OpaqueSurfaces.size(); i++) {
+		//if (is_visible(_mainDrawContext.OpaqueSurfaces[i], _sceneData.viewproj)) {
+		//	opaque_draws.push_back(i);
+		//}
+		opaque_draws.push_back(i);
+	}
+
+	// Sort the opaque surfaces by material and mesh
+	std::sort(opaque_draws.begin(), opaque_draws.end(), [&](const auto& iA, const auto& iB) {
+		const RenderObject& A = _mainDrawContext.OpaqueSurfaces[iA];
+		const RenderObject& B = _mainDrawContext.OpaqueSurfaces[iB];
+		if (A.material == B.material) {
+			return A.indexBuffer < B.indexBuffer;
+		}
+		else {
+			return A.material < B.material;
+		}
+		});
+
+	// Allocate a new uniform buffer for the scene data
+	AllocatedBuffer gpuSceneDataBuffer = create_buffer(sizeof(GPUSceneData), vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eCpuToGpu);
+
+	// Add it to the deletion queue of this frame so it gets deleted once it's been used
+	get_current_frame()._deletionQueue.push_function([=, this]() {
+		destroy_buffer(gpuSceneDataBuffer);
+		});
+
+	// Write the buffer
+	GPUSceneData* sceneUniformData = (GPUSceneData*)gpuSceneDataBuffer.info.pMappedData; // would this work? No idea! It should have been from the "allocation" instead of the "allocationinfo" when not the hpp headers.
+	*sceneUniformData = _sceneData;
+
+	// Create a descriptor set which binds the buffer and updates it
+	vk::DescriptorSet globalDescriptor = get_current_frame()._frameDescriptors.allocate(_device, _gpuSceneDataDescriptorLayout);
+
+	DescriptorWriter writer;
+	writer.write_buffer(0, gpuSceneDataBuffer.buffer, sizeof(GPUSceneData), 0, vk::DescriptorType::eUniformBuffer);
+	writer.update_set(_device, globalDescriptor);
+
+	MaterialPipeline* lastPipeline = nullptr;
+	MaterialInstance* lastMaterial = nullptr;
+	vk::Buffer lastIndexBuffer = VK_NULL_HANDLE;
+
+	//> Draw lambda
+	auto draw = [&](const RenderObject& r) {
+		if (r.material != lastMaterial) {
+			lastMaterial = r.material;
+			// Rebind pipeline and descriptors if the material changed
+			if (r.material->pipeline != lastPipeline) {
+				lastPipeline = r.material->pipeline;
+
+				cmd.bindPipeline(vk::PipelineBindPoint::eGraphics, r.material->pipeline->pipeline);
+				cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.material->pipeline->layout, 0, 1, &globalDescriptor, 0, nullptr);
+
+				// Setup viewport
+				vk::Viewport viewport = {};
+				viewport.x = 0;
+				viewport.y = 0;
+				viewport.width = (float)_windowExtent.width;
+				viewport.height = (float)_windowExtent.height;
+				viewport.minDepth = 0.f;
+				viewport.maxDepth = 1.f;
+
+				cmd.setViewport(0, 1, &viewport);
+
+				// Setup scissor
+				vk::Rect2D scissor = {};
+				scissor.offset.x = 0;
+				scissor.offset.y = 0;
+				scissor.extent.width = _windowExtent.width;
+				scissor.extent.height = _windowExtent.height;
+
+				cmd.setScissor(0, 1, &scissor);
+			}
+			// Bind material descriptor sets
+			cmd.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.material->pipeline->layout, 1, 1, &r.material->materialSet, 0, nullptr);
+		}
+		// Rebind index buffer if needed
+
+		if (r.indexBuffer != lastIndexBuffer) {
+			lastIndexBuffer = r.indexBuffer;
+			cmd.bindIndexBuffer(r.indexBuffer, 0, vk::IndexType::eUint32);
+		}
+
+		// Calculate final mesh matrix
+		GPUDrawPushConstants push_constants;
+		push_constants.worldMatrix = r.transform;
+		push_constants.vertexBuffer = r.vertexBufferAddress;
+		cmd.pushConstants(r.material->pipeline->layout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(GPUDrawPushConstants), &push_constants);
+	
+		// Perform the actual draw call
+		cmd.drawIndexed(r.indexCount, 1, r.firstIndex, 0, 0);
+
+		// Update stats counters
+		_stats.drawcall_count++;
+		_stats.triangle_count += r.indexCount / 3;	
+		};
+	//< draw_lambda
+
+	// Reset stats counters
+	_stats.drawcall_count = 0;
+	_stats.triangle_count = 0;
+
+	// Use the draw lambda to first draw opaque surfaces then transparent surfaces
+	for (auto& r : opaque_draws) {
+		draw(_mainDrawContext.OpaqueSurfaces[r]);
+	}
+	
+	for (auto& r : _mainDrawContext.TransparentSurfaces) {
+		draw(r);
+	}
+	
+	// Delete draw commands now that we processed them
+	_mainDrawContext.OpaqueSurfaces.clear();
+	_mainDrawContext.TransparentSurfaces.clear();
 }
 //< draw
 
