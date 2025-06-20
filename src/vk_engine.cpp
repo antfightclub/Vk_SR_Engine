@@ -1051,6 +1051,38 @@ void VkSREngine::update_compute() {
 	_computeEffects[0].data.data1.x = _stats.time_since_start;
 }
 
+void VkSREngine::update_scene() {
+	// Begin clock
+	auto start = std::chrono::system_clock::now();
+
+	_mainCamera.update();
+
+	glm::mat4 view = _mainCamera.getViewMatrix();
+
+	// Camera projection 
+	glm::mat4 projection = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f);
+
+	// Invert the Y direction on the projection matrix to conform to OpenGL and glTF axis conventions
+	projection[1][1] *= -1;
+
+	_mainDrawContext.OpaqueSurfaces.clear();
+
+	update_renderables();
+
+	_sceneData.view = view;
+	_sceneData.proj = projection;
+	_sceneData.viewproj = projection * view; // the GLM order of operations is "backwards" compared to GLSL due to conventions
+
+	// Some default lighting parameters
+	_sceneData.ambientColor = glm::vec4{ 1.f };
+	_sceneData.sunlightColor = glm::vec4{ 1.f };
+	_sceneData.sunlightDirection = glm::vec4{ 0, 1, 0.5, 1.f }; // w is intensity
+
+	auto end = std::chrono::system_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	_stats.scene_update_time = elapsed.count() / 1000.f;
+}
+
 void VkSREngine::update_renderables() {
 }
 //< update
