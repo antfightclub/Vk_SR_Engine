@@ -70,6 +70,11 @@ void VkSREngine::init()
 	
 	init_default_data();
 
+	_mainCamera.velocity = glm::vec3{ 0.f };
+	_mainCamera.position = glm::vec3{ 0.f, 0.f, 0.f };
+	_mainCamera.pitch = 0;
+	_mainCamera.yaw = 0;
+
 	_isInitialized = true;
 }
 
