@@ -210,6 +210,7 @@ public:
 
 	void update();
 	void update_compute();
+	void update_scene();
 	void update_renderables();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
