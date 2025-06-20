@@ -206,6 +206,7 @@ public:
 
 	void draw();
 	void draw_main(vk::CommandBuffer cmd);
+	void draw_geometry(vk::CommandBuffer cmd);
 
 	void update();
 	void update_compute();
