@@ -38,8 +38,8 @@ std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& as
 				stbi_image_free(data);
 			}
 		},
-		[&](fastgltf::sources::Vector& vector) {
-			unsigned char* data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(vector.bytes.data()), static_cast<int>(vector.bytes.size()), &width, &height, &nrChannels, 4);
+		[&](fastgltf::sources::Array& arr) {
+			unsigned char* data = stbi_load_from_memory(reinterpret_cast<unsigned char*>(arr.bytes.data()), static_cast<int>(arr.bytes.size()), &width, &height, &nrChannels, 4);
 			if (data) {
 				vk::Extent3D imagesize;
 				imagesize.width = width;
