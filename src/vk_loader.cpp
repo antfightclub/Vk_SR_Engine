@@ -33,7 +33,7 @@ std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& as
 				imagesize.height = height;
 				imagesize.depth = 1;
 
-				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true); // I have not yet implemented create_image
+				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true); // I have not yet implemented create_image
 
 				stbi_image_free(data);
 			}
@@ -46,7 +46,7 @@ std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& as
 				imagesize.height = height;
 				imagesize.depth = 1;
 
-				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+				newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 
 				stbi_image_free(data);
 			}
@@ -64,7 +64,7 @@ std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& as
 						imagesize.height = height;
 						imagesize.depth = 1;
 
-						newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled, true);
+						newImage = engine->create_image(data, imagesize, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled, true);
 
 						stbi_image_free(data);
 					}
