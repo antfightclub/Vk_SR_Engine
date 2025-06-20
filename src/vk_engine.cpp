@@ -69,6 +69,8 @@ void VkSREngine::init()
 	init_pipelines();
 	
 	init_default_data();
+	
+	init_renderables();
 
 	_mainCamera.velocity = glm::vec3{ 0.f };
 	_mainCamera.position = glm::vec3{ 0.f, 0.f, 0.f };
@@ -507,6 +509,9 @@ void VkSREngine::init_default_data() {
 		destroy_image(_whiteImage);
 		destroy_image(_errorCheckerboardImage);
 		});
+}
+
+void VkSREngine::init_renderables() {
 }
 //< init_default_data
 
