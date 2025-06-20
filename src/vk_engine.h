@@ -188,6 +188,13 @@ public:
 	MaterialInstance _defaultData;
 	GLTFMetallic_Roughness _metalRoughMaterial;
 
+	// Draw context 
+	DrawContext _mainDrawContext;
+	GPUSceneData _sceneData;
+
+	// glTF scenes
+	std::unordered_map<std::string, std::shared_ptr<LoadedGLTF>> _loadedScenes;
+
 	// Camera
 	Camera _mainCamera;
 
