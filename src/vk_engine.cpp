@@ -1050,6 +1050,9 @@ void VkSREngine::update_compute() {
 	// Advance time in frosty shader
 	_computeEffects[0].data.data1.x = _stats.time_since_start;
 }
+
+void VkSREngine::update_renderables() {
+}
 //< update
 
 void VkSREngine::run() 
