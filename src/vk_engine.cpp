@@ -475,7 +475,7 @@ void VkSREngine::init_default_data() {
 		}
 	}
 
-	_errorCheckerboardImage = create_image(pixels.data(), vk::Extent3D{ 16, 16, 1 }, vk::Format::eR8G8B8Unorm, vk::ImageUsageFlagBits::eSampled);
+	_errorCheckerboardImage = create_image(pixels.data(), vk::Extent3D{ 16, 16, 1 }, vk::Format::eR8G8B8A8Unorm, vk::ImageUsageFlagBits::eSampled);
 
 	// Initialize the two default samplers
 	vk::SamplerCreateInfo sampl = {};
