@@ -737,6 +737,27 @@ void VkSREngine::draw_main(vk::CommandBuffer cmd) {
 	// Dispatch a compute command
 	cmd.dispatch(std::ceil(_drawExtent.width / 16.0), std::ceil(_drawExtent.height / 16.0), 1);
 	//< Compute draws
+
+	//> geometry draws
+	vk::RenderingAttachmentInfo colorAttachment = vkinit::attachment_info(_drawImage.imageView, nullptr, vk::ImageLayout::eGeneral);
+	vk::RenderingAttachmentInfo depthAttachment = vkinit::depth_attachment_info(_depthImage.imageView, vk::ImageLayout::eDepthAttachmentOptimal);
+
+	vk::RenderingInfo renderInfo = vkinit::rendering_info(_windowExtent, &colorAttachment, &depthAttachment);
+
+	cmd.beginRendering(&renderInfo);
+
+	auto start = std::chrono::system_clock::now();
+	
+	draw_geometry(cmd);
+
+	auto end = std::chrono::system_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	_stats.mesh_draw_time = elapsed.count() / 1000.f;
+
+	cmd.endRendering();
+	//< geometry draws
+}
+
 }
 //< draw
 
