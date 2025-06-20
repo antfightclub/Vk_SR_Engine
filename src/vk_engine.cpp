@@ -1009,7 +1009,7 @@ GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Ve
 	// Use a CPU-local staging buffer which will get copied into GPU memory
 	AllocatedBuffer staging = create_buffer(vertexBufferSize + indexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly);
 
-	void* data = staging.allocation;
+	void* data = staging.info.pMappedData; // In VMA, the VmaAllocation would have a pointer ->GetMappedData(), but in VMA-HPP, that is not present. vma::AllocationInfo.pMappedData has the same effect in VMA-HPP it seems
 
 	// Copy vertex buffer
 	memcpy(data, vertices.data(), vertexBufferSize);
