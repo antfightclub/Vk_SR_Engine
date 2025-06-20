@@ -210,6 +210,7 @@ public:
 
 	void update();
 	void update_compute();
+	void update_renderables();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 
@@ -231,6 +232,7 @@ private:
 	void init_pipelines();
 	void init_compute_pipelines();
 	void init_default_data();
+	void init_renderables();
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();
