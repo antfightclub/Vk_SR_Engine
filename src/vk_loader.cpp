@@ -391,7 +391,6 @@ std::optional<std::shared_ptr<LoadedGLTF>> loadGltf(VkSREngine* engine, std::str
 		newMesh->meshBuffers = engine->upload_mesh(indices, vertices);
 	}
 
-	// TODO: The transform returned from here is undefined leading to a transform that screws up rendering big time
 	// Load all nodes and their meshes
 	for (fastgltf::Node& node : gltf.nodes) {
 		std::shared_ptr<Node> newNode;
