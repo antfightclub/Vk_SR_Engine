@@ -548,6 +548,8 @@ void VkSREngine::cleanup()
 		// Ensure that GPU has stopped all work
 		_device.waitIdle();
 
+		_loadedScenes.clear();
+
 		for (auto& frame : _frames) {
 			frame._deletionQueue.flush();
 		}
