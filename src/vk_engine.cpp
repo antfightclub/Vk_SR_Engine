@@ -1268,6 +1268,7 @@ void MeshNode::Draw(const glm::mat4& topMatrix, DrawContext& ctx) {
 		def.indexBuffer = mesh->meshBuffers.indexBuffer.buffer;
 		def.material = &s.material->data;
 		def.bounds = s.bounds;
+		def.transform = nodeMatrix;
 		def.vertexBufferAddress = mesh->meshBuffers.vertexBufferAddress;
 
 		if (s.material->data.passType == MaterialPass::Transparent) {
