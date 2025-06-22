@@ -22,6 +22,8 @@ target_sources(${PROJECT_NAME} PRIVATE
 
 set_property (TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 
+target_compile_definitions(${PROJECT_NAME} PUBLIC GLM_FORCE_DEPTH_ZERO_TO_ONE)
+
 target_include_directories (${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 
