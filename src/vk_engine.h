@@ -207,11 +207,13 @@ public:
 	void draw();
 	void draw_main(vk::CommandBuffer cmd);
 	void draw_geometry(vk::CommandBuffer cmd);
+	void draw_imgui(vk::CommandBuffer cmd, vk::ImageView targetImageView);
 
 	void update();
 	void update_compute();
 	void update_scene();
 	void update_renderables();
+	void update_imgui();
 
 	void immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function);
 
@@ -234,6 +236,7 @@ private:
 	void init_compute_pipelines();
 	void init_default_data();
 	void init_renderables();
+	void init_imgui();
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();
