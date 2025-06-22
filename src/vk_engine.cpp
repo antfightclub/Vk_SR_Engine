@@ -25,6 +25,11 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/transform.hpp>
 
+#include "imgui.h"
+#include "backends/imgui_impl_sdl3.h"
+#include "backends/imgui_impl_vulkan.h"
+
+
 // Could use a preprocessor directive to define as true on debug build
 // and false on release build
 constexpr bool bUseValidationLayers = true;
