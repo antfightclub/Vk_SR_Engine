@@ -473,7 +473,9 @@ void LoadedGLTF::clearAll() {
 	}
 
 	for (auto& [k, v] : images) {
-		// TODO: when adding the default error checkerboard image, remember to skip destroying it since it's a member of creator!
+		if (v.image == creator->_errorCheckerboardImage.image) {
+			// Don't destroy a default image
+		}
 		fmt::println("TODO: After adding the default error checkerboard image, remember to skip destroying it since it's a member of creator!");
 		creator->destroy_image(v);
 	}
