@@ -968,6 +968,14 @@ void VkSREngine::draw_geometry(vk::CommandBuffer cmd) {
 }
 
 void VkSREngine::draw_imgui(vk::CommandBuffer cmd, vk::ImageView targetImageView) {
+	vk::RenderingAttachmentInfo colorAttachment = vkinit::attachment_info(targetImageView, nullptr, vk::ImageLayout::eGeneral);
+	vk::RenderingInfo renderInfo = vkinit::rendering_info(_swapchainExtent, &colorAttachment, nullptr);
+
+	cmd.beginRendering(&renderInfo);
+
+	ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
+
+	cmd.endRendering();
 }
 //< draw
 
