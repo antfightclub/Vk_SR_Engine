@@ -76,6 +76,8 @@ void VkSREngine::init()
 	init_default_data();
 	
 	init_renderables();
+	
+	init_imgui();
 
 	_mainCamera.velocity = glm::vec3{ 0.f };
 	_mainCamera.position = glm::vec3{ 0.f, 0.f, 0.f };
@@ -526,6 +528,11 @@ void VkSREngine::init_renderables() {
 }
 //< init_default_data
 
+//> init_imgui
+void VkSREngine::init_imgui() {
+}
+//< init_imgui
+
 //> immediate_submit
 void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function) {
 	VK_CHECK(_device.resetFences(1, &_immFence));
@@ -652,7 +659,7 @@ void VkSREngine::draw() {
 	// Update draw image extent
 	_drawExtent.height = std::min(_swapchainExtent.height, _drawImage.imageExtent.height) * renderScale;
 	_drawExtent.width = std::min(_swapchainExtent.width, _drawImage.imageExtent.width) * renderScale;
-	
+
 	// Reset frame renderfence
 	VK_CHECK(_device.resetFences(1, &get_current_frame()._renderFence));
 
@@ -687,6 +694,9 @@ void VkSREngine::draw() {
 
 	// Transition from transferdst to color attachment for future compatibility when using immediate submits with imgui
 	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eColorAttachmentOptimal);
+
+	// Draw Imgui into the swapchain image
+	draw_imgui(cmd, _swapchainImageViews[swapchainImageIndex]);
 
 	// Set swapchain image layout to present so we can show it to the window
 	vkutil::transition_image(cmd, _swapchainImages[swapchainImageIndex], vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::ePresentSrcKHR);
@@ -892,6 +902,9 @@ void VkSREngine::draw_geometry(vk::CommandBuffer cmd) {
 	_mainDrawContext.OpaqueSurfaces.clear();
 	_mainDrawContext.TransparentSurfaces.clear();
 }
+
+void VkSREngine::draw_imgui(vk::CommandBuffer cmd, vk::ImageView targetImageView) {
+}
 //< draw
 
 //> buffer/image/mesh allocation
@@ -1056,9 +1069,14 @@ GPUMeshBuffers VkSREngine::upload_mesh(std::span<uint32_t> indices, std::span<Ve
 
 //> update
 void VkSREngine::update() {
+	update_imgui();
+
 	update_compute();
 
 	update_scene();
+}
+
+void VkSREngine::update_imgui() {
 }
 
 void VkSREngine::update_compute() {
@@ -1137,6 +1155,9 @@ void VkSREngine::run()
 
 			// Camera movement
 			_mainCamera.processSDLEvent(e);
+
+			// Send SDL event to Dear ImGui for processing
+			ImGui_ImplSDL3_ProcessEvent(&e);
 		}
 
 		// Do not draw if minimized
@@ -1151,7 +1172,7 @@ void VkSREngine::run()
 			resize_swapchain();
 		}
 
-		// Update
+		// Main update loop
 		update();
 
 		// draw loop
