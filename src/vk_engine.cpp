@@ -1064,7 +1064,8 @@ void VkSREngine::update_scene() {
 	glm::mat4 view = _mainCamera.getViewMatrix();
 
 	// Camera projection 
-	glm::mat4 projection = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f);
+	// The "near" and "far" parameters are flipped to get a reversed depth range, see https://developer.nvidia.com/blog/visualizing-depth-precision/
+	glm::mat4 projection = glm::perspective(glm::radians(70.f), (float)_windowExtent.width / (float)_windowExtent.height, 10000.f, 0.1f); 
 
 	// Invert the Y direction on the projection matrix to conform to OpenGL and glTF axis conventions
 	projection[1][1] *= -1;
@@ -1211,7 +1212,7 @@ void GLTFMetallic_Roughness::build_pipelines(VkSREngine* engine) {
 	// Use the triangle layout
 	pipelineBuilder._pipelineLayout = newLayout;
 
-	// Build the popeline
+	// Build the pipeline
 	opaquePipeline.pipeline = pipelineBuilder.build_pipeline(engine->_device);
 
 	// Create the transparent variant for transparent surfaces
