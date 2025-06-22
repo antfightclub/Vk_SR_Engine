@@ -38,6 +38,7 @@ target_link_libraries (${PROJECT_NAME} PUBLIC
 	glm::glm
 	stb_image
 	fastgltf::fastgltf
+	imgui
 	)
 
 target_precompile_headers (${PROJECT_NAME} PUBLIC
