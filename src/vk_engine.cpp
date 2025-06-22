@@ -530,6 +530,70 @@ void VkSREngine::init_renderables() {
 
 //> init_imgui
 void VkSREngine::init_imgui() {
+	// Create a descriptor pool for Dear Imgui
+	// The size of the pool is *extremely* oversized but it's copied from the Dear Imgui demo.
+	// I have gotten away with a MUCH smaller pool before but for now I'll do it as in the example...
+	vk::DescriptorPoolSize pool_sizes[] = {
+		{vk::DescriptorType::eSampler, 1000},
+		{vk::DescriptorType::eCombinedImageSampler, 1000},
+		{vk::DescriptorType::eSampledImage, 1000},
+		{vk::DescriptorType::eStorageImage, 1000},
+		{vk::DescriptorType::eUniformTexelBuffer, 1000},
+		{vk::DescriptorType::eStorageTexelBuffer, 1000},
+		{vk::DescriptorType::eUniformBuffer, 1000},
+		{vk::DescriptorType::eStorageBuffer, 1000},
+		{vk::DescriptorType::eUniformBufferDynamic, 1000},
+		{vk::DescriptorType::eStorageBufferDynamic, 1000},
+		{vk::DescriptorType::eInputAttachment, 1000},
+	};
+
+	vk::DescriptorPoolCreateInfo pool_info = {};
+	pool_info.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+	pool_info.maxSets = 1000;
+	pool_info.poolSizeCount = (uint32_t)std::size(pool_sizes);
+	pool_info.pPoolSizes = pool_sizes;
+
+	vk::DescriptorPool imguiPool;
+
+	VK_CHECK(_device.createDescriptorPool(&pool_info, nullptr, &imguiPool));
+
+	// Initialize the Dear Imgui library
+
+	// Initializes the core structures of imgui
+	ImGui::CreateContext();
+
+	// Enable docking
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	// Initializes imgui for SDL with a Vulkan context
+	ImGui_ImplSDL3_InitForVulkan(_window);
+
+	// Initializes imgi for vulkan
+	ImGui_ImplVulkan_InitInfo init_info = {};
+	init_info.Instance = _instance;
+	init_info.PhysicalDevice = _chosenGPU;
+	init_info.Device = _device;
+	init_info.Queue = _graphicsQueue;
+	init_info.DescriptorPool = imguiPool;
+	init_info.MinImageCount = 3;
+	init_info.ImageCount = 3;
+	init_info.UseDynamicRendering = true;
+
+	// Dynamic rendering parameters for imgui to use
+	init_info.PipelineRenderingCreateInfo = {};
+	init_info.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO;
+	init_info.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+	init_info.PipelineRenderingCreateInfo.pColorAttachmentFormats = reinterpret_cast<VkFormat*>(&_swapchainImageFormat);
+
+	init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+	ImGui_ImplVulkan_Init(&init_info);
+	
+	// Add the imgui structures to the deletion queue
+	_mainDeletionQueue.push_function([=]() {
+		ImGui_ImplVulkan_Shutdown();
+		_device.destroyDescriptorPool(imguiPool, nullptr);
+		});
 }
 //< init_imgui
 
