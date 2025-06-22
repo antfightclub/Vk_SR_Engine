@@ -56,8 +56,8 @@ std::optional<AllocatedImage> load_image(VkSREngine* engine, fastgltf::Asset& as
 			auto& buffer = asset.buffers[bufferView.bufferIndex];
 			std::visit(fastgltf::visitor { // Only care about VectorWithMime here since LoadExternalBuffers has been specified meaning all buffers are already loaded into a vector
 				[](auto& arg) {},
-				[&](fastgltf::sources::Vector& vector) {
-					unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(vector.bytes.data()) + bufferView.byteOffset, static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
+				[&](fastgltf::sources::Array& arr) {
+					unsigned char* data = stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(arr.bytes.data()) + bufferView.byteOffset, static_cast<int>(bufferView.byteLength), &width, &height, &nrChannels, 4);
 					if (data) {
 						vk::Extent3D imagesize;
 						imagesize.width = width;
