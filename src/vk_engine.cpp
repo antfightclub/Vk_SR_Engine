@@ -512,6 +512,12 @@ void VkSREngine::init_default_data() {
 }
 
 void VkSREngine::init_renderables() {
+	std::string duckPath = { "..\\..\\assets\\duck\\duck.gltf" };
+	auto duckFile = loadGltf(this, duckPath);
+
+	assert(duckFile.has_value());
+
+	_loadedScenes["duck"] = *duckFile;
 }
 //< init_default_data
 
@@ -1089,6 +1095,7 @@ void VkSREngine::update_scene() {
 }
 
 void VkSREngine::update_renderables() {
+	_loadedScenes["duck"]->Draw(glm::mat4{ 1.f }, _mainDrawContext);
 }
 //< update
 
