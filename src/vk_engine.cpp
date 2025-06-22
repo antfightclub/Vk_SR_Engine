@@ -1149,6 +1149,24 @@ void VkSREngine::update() {
 }
 
 void VkSREngine::update_imgui() {
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplSDL3_NewFrame();
+	ImGui::NewFrame();
+
+	// Statistics
+	ImGui::Begin("Stats");
+	ImGui::Text("frametime %f ms", _stats.frametime);
+	ImGui::Text("draw time %f ms", _stats.mesh_draw_time);
+	ImGui::Text("scene update time %f ms", _stats.scene_update_time);
+	ImGui::Text("triangle count %i", _stats.triangle_count);
+	ImGui::Text("draw calls %i", _stats.drawcall_count);
+	ImGui::End();
+
+	ImGui::Begin("Test");
+	ImGui::Text("Testing, testing, 1, 2, 3!");
+	ImGui::End();
+
+	ImGui::Render();
 }
 
 void VkSREngine::update_compute() {
