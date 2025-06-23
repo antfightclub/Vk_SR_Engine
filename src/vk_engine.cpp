@@ -1162,8 +1162,9 @@ void VkSREngine::update_imgui() {
 	ImGui::Text("draw calls %i", _stats.drawcall_count);
 	ImGui::End();
 
-	ImGui::Begin("Test");
-	ImGui::Text("Testing, testing, 1, 2, 3!");
+	// Controls
+	ImGui::Begin("Controls");
+	ImGui::Text("Mouse to move");
 	ImGui::End();
 
 	ImGui::Render();
