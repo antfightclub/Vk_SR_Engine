@@ -28,6 +28,27 @@ struct DeletionQueue
 	}
 };
 
+// Want to implement something like this to toggle between "mouse free" and "hide mouse and lock in window for camera"
+// Add ControlState as member in engine and perform event handling to toggle the state, save the mouse position for later.
+// Add a keybind to toggle it. Also add a keybind to quit the application, like holding ESC for a few seconds.
+/*
+static SDL_Window* window;
+static int saved_x, saved_y;
+
+void setMyRelativeMouseMode(SDL_bool enable)
+{
+	if (enable) {
+		SDL_GetMouseState(&saved_x, &saved_y);
+		SDL_SetRelativeMouseMode(true);
+	}
+	else {
+		// also try flipping the order of these calls.
+		SDL_SetRelativeMouseMode(false);
+		SDL_WarpMouseInWindow(window, saved_x, saved_y);
+	}
+}*/
+
+
 struct EngineStats {
 	float frametime{ 0.f };
 	int triangle_count{ 0 };
@@ -197,6 +218,9 @@ public:
 
 	// Camera
 	Camera _mainCamera;
+
+	// Controls 
+	MouseControlState _mouseControlState;
 
 	void init();
 
