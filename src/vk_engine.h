@@ -28,6 +28,14 @@ struct DeletionQueue
 	}
 };
 
+struct MouseControlState{
+	bool isMouseVisible;
+	bool isMouseCentered;
+	static int mouse_saved_x;
+	static int mouse_saved_y;
+	// More members?
+};
+
 // Want to implement something like this to toggle between "mouse free" and "hide mouse and lock in window for camera"
 // Add ControlState as member in engine and perform event handling to toggle the state, save the mouse position for later.
 // Add a keybind to toggle it. Also add a keybind to quit the application, like holding ESC for a few seconds.
