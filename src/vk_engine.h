@@ -254,7 +254,9 @@ public:
 	void destroy_image(const AllocatedImage& img);
 
 	GPUMeshBuffers upload_mesh(std::span<uint32_t> indices, std::span<Vertex> vertices);
-
+	
+	void handle_controls(SDL_Event& e);
+	void set_relative_mouse_mode(bool enable);
 
 private:
 	void init_vulkan();
@@ -267,6 +269,7 @@ private:
 	void init_default_data();
 	void init_renderables();
 	void init_imgui();
+	void init_controls();
 
 	void create_swapchain(uint32_t width, uint32_t height);
 	void resize_swapchain();
