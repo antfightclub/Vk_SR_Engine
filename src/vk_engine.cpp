@@ -1299,6 +1299,37 @@ void VkSREngine::run()
 	}
 }
 
+//> controls
+void VkSREngine::set_relative_mouse_mode(bool enable) {
+	if (enable) {
+		// Grab window-relative x and y mouse position
+		SDL_GetMouseState(&_mouseControlState.mouse_saved_x, &_mouseControlState.mouse_saved_y);
+
+		// Set relative mode to true
+		SDL_SetWindowRelativeMouseMode(_window, true);
+		
+		// Make window grab the mouse
+		SDL_SetWindowMouseGrab(_window, true);
+
+		// Instruct camera to perform mouse look
+		_mainCamera.is_mouse_mode_relative = true;
+	}
+	else {
+		// Place mouse in saved window-relative x and y position
+		SDL_WarpMouseInWindow(_window, _mouseControlState.mouse_saved_x, _mouseControlState.mouse_saved_y);
+		
+		// Set relative mode to false
+		SDL_SetWindowRelativeMouseMode(_window, false);
+	
+		// Free the mouse from its shackles
+		SDL_SetWindowMouseGrab(_window, false);
+
+		// Instruct camera not to perform mouse look
+		_mainCamera.is_mouse_mode_relative = false;
+	}
+}
+//< controls
+
 // ############## GLTF materials ###############
 void GLTFMetallic_Roughness::build_pipelines(VkSREngine* engine) {
 	// Fixed function pipeline vertex shader and fragment shader
