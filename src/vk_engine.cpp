@@ -79,6 +79,8 @@ void VkSREngine::init()
 	
 	init_imgui();
 
+	init_controls();
+
 	_mainCamera.velocity = glm::vec3{ 0.f };
 	_mainCamera.position = glm::vec3{ 0.f, 0.f, 0.f };
 	_mainCamera.pitch = 0;
@@ -596,6 +598,14 @@ void VkSREngine::init_imgui() {
 		});
 }
 //< init_imgui
+
+//> init_controls
+void VkSREngine::init_controls() {
+	_is_mouse_relative = false;
+	_mouseControlState.mouse_saved_x = 0.f;
+	_mouseControlState.mouse_saved_y = 0.f;
+}
+//< init_controls
 
 //> immediate_submit
 void VkSREngine::immediate_submit(std::function<void(vk::CommandBuffer cmd)>&& function) {
