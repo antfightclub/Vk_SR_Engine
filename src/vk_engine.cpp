@@ -1175,6 +1175,15 @@ void VkSREngine::update_imgui() {
 	// Controls
 	ImGui::Begin("Controls");
 	ImGui::Text("Mouse to move");
+	ImGui::Text("Press TAB to toggle mouse mode");
+	if (_is_mouse_relative) {
+		ImGui::Text("-> Mouse mode is relative");
+	}
+	else {
+		ImGui::Text("-> Mouse mode is not relative");
+	}
+	ImGui::Text("WASD to move around");
+
 	ImGui::End();
 
 	ImGui::Render();
