@@ -29,11 +29,8 @@ struct DeletionQueue
 };
 
 struct MouseControlState{
-	bool isMouseVisible;
-	bool isMouseCentered;
-	static int mouse_saved_x;
-	static int mouse_saved_y;
-	// More members?
+	float mouse_saved_x;
+	float mouse_saved_y;
 };
 
 // Want to implement something like this to toggle between "mouse free" and "hide mouse and lock in window for camera"
