@@ -14,6 +14,8 @@ public:
 	// Horizontal rotation
 	float yaw{ 0.f };
 
+	bool is_mouse_mode_relative = false;
+
 	glm::mat4 getViewMatrix();
 	glm::mat4 getRotationMatrix();
 
