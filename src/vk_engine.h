@@ -226,6 +226,7 @@ public:
 
 	// Controls 
 	MouseControlState _mouseControlState;
+	bool _is_mouse_relative{}; // bool inits to false by default
 
 	void init();
 
