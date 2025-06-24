@@ -32,7 +32,8 @@ void Camera::processSDLEvent(SDL_Event& e) {
 		if (e.key.key == SDLK_D) { velocity.x = 0; }
 	}
 
-	if (e.type == SDL_EVENT_MOUSE_MOTION) {
+	// Only perform mouse look if mouse is not visible
+	if (is_mouse_mode_relative && e.type == SDL_EVENT_MOUSE_MOTION) { 
 		yaw += (float)e.motion.xrel / 200.f;
 		pitch -= (float)e.motion.yrel / 200.f;
 	}
