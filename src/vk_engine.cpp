@@ -1263,6 +1263,9 @@ void VkSREngine::run()
 				stop_rendering = false;
 			}
 
+			// General controls
+			handle_controls(e);
+
 			// Camera movement
 			_mainCamera.processSDLEvent(e);
 
@@ -1300,6 +1303,25 @@ void VkSREngine::run()
 }
 
 //> controls
+void VkSREngine::handle_controls(SDL_Event& e) {
+	
+	if(e.type == SDL_EVENT_KEY_DOWN) {
+		// Handle toggling mouse modes between relative (mouse grabbed and hidden) 
+		if (e.key.key == SDLK_TAB) {
+			//_is_mouse_relative != _is_mouse_relative; // Not sure why the compiler throws a C4552 warning here...
+			if (_is_mouse_relative == true) {
+				_is_mouse_relative = false;
+			}
+			else {
+				_is_mouse_relative = true;
+			}
+
+			set_relative_mouse_mode(_is_mouse_relative);
+		}
+
+	}
+}
+
 void VkSREngine::set_relative_mouse_mode(bool enable) {
 	if (enable) {
 		// Grab window-relative x and y mouse position
