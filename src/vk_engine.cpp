@@ -1185,6 +1185,11 @@ void VkSREngine::update_imgui() {
 		ImGui::Text("-> Mouse mode is not relative");
 	}
 	ImGui::Text("WASD to move around");
+	ImGui::Text("Use scroll to adjust speed");
+	ImGui::Text("Press LSHIFT for finder adjustment");
+	ImGui::PushItemFlag(ImGuiItemFlags_NoTabStop, true); // This will stop focusing on the input field when pressing tab 
+	ImGui::SliderFloat("Speed", &_mainCamera.speed, 0.01, 1.0);
+	ImGui::PopItemFlag(); 
 
 	ImGui::End();
 

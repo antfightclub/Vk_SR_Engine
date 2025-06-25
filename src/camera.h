@@ -15,6 +15,10 @@ public:
 	float yaw{ 0.f };
 
 	bool is_mouse_mode_relative = false;
+	
+	float speed{ 0.25f };
+
+	bool lshift_pressed{};
 
 	glm::mat4 getViewMatrix();
 	glm::mat4 getRotationMatrix();

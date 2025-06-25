@@ -17,12 +17,13 @@ glm::mat4 Camera::getRotationMatrix() {
 
 void Camera::processSDLEvent(SDL_Event& e) {
 	// This isn't a very good way to handle keyboard input and motion... should update
-	
+
 	if (e.type == SDL_EVENT_KEY_DOWN) {
 		if (e.key.key == SDLK_W) { velocity.z = -1; }
 		if (e.key.key == SDLK_S) { velocity.z = 1; }
 		if (e.key.key == SDLK_A) { velocity.x = -1; }
 		if (e.key.key == SDLK_D) { velocity.x = 1; }
+		if (e.key.key == SDLK_LSHIFT) { lshift_pressed = true; }
 	}
 
 	if (e.type == SDL_EVENT_KEY_UP) {
@@ -30,16 +31,24 @@ void Camera::processSDLEvent(SDL_Event& e) {
 		if (e.key.key == SDLK_S) { velocity.z = 0; }
 		if (e.key.key == SDLK_A) { velocity.x = 0; }
 		if (e.key.key == SDLK_D) { velocity.x = 0; }
+		if (e.key.key == SDLK_LSHIFT) { lshift_pressed = false; }
 	}
 
-	// Only perform mouse look if mouse is not visible
+	// Only perform mouse look if mouse mode is relative
 	if (is_mouse_mode_relative && e.type == SDL_EVENT_MOUSE_MOTION) { 
 		yaw += (float)e.motion.xrel / 200.f;
 		pitch -= (float)e.motion.yrel / 200.f;
+	}
+
+	if (e.type == SDL_EVENT_MOUSE_WHEEL) {
+		float multiplier = 0.075;
+		if (lshift_pressed) { multiplier = 0.01; }
+		const float newspeed = speed + e.wheel.y * multiplier;
+		speed = std::clamp(newspeed, 0.01f, 1.0f);
 	}
 }
 
 void Camera::update() {
 	glm::mat4 cameraRotation = getRotationMatrix();
-	position += glm::vec3(cameraRotation * glm::vec4(velocity * 0.5f, 0.f));
+	position += glm::vec3(cameraRotation * glm::vec4(velocity * speed, 0.f));
 }
