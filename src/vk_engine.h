@@ -55,6 +55,7 @@ void setMyRelativeMouseMode(SDL_bool enable)
 
 
 struct EngineStats {
+	float avg_fps{ 0.f };
 	float frametime{ 0.f };
 	int triangle_count{ 0 };
 	int drawcall_count{ 0 };

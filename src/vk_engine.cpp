@@ -1165,6 +1165,7 @@ void VkSREngine::update_imgui() {
 
 	// Statistics
 	ImGui::Begin("Stats");
+	ImGui::Text("Average FPS: %f", _stats.avg_fps);
 	ImGui::Text("frametime %f ms", _stats.frametime);
 	ImGui::Text("draw time %f ms", _stats.mesh_draw_time);
 	ImGui::Text("scene update time %f ms", _stats.scene_update_time);
@@ -1299,6 +1300,10 @@ void VkSREngine::run()
 		_stats.frametime = elapsed.count() / 1000.f;
 		// Then back to seconds
 		_stats.time_since_start += _stats.frametime / 1000.f;
+		_stats.avg_fps = _frameNumber / (_stats.time_since_start);
+		if (_stats.avg_fps > 200000) {
+			_stats.avg_fps = 0;
+		}
 	}
 }
 
