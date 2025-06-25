@@ -1166,6 +1166,7 @@ void VkSREngine::update_imgui() {
 	// Statistics
 	ImGui::Begin("Stats");
 	ImGui::Text("Average FPS: %f", _stats.avg_fps);
+	ImGui::Text("Current frame number: %i", _frameNumber);
 	ImGui::Text("frametime %f ms", _stats.frametime);
 	ImGui::Text("draw time %f ms", _stats.mesh_draw_time);
 	ImGui::Text("scene update time %f ms", _stats.scene_update_time);
